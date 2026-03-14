@@ -20,6 +20,7 @@ export const usuarios = pgTable('usuarios', {
   id: uuid('id').defaultRandom().primaryKey(),
   nome: text('nome').notNull(),
   email: text('email').notNull().unique(),
+  senhaHash: text('senha_hash'),
   perfil: perfilUsuario('perfil').notNull().default('visualizador'),
   ativo: boolean('ativo').notNull().default(true),
   criadoEm: timestamp('criado_em').notNull().defaultNow(),

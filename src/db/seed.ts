@@ -5,25 +5,29 @@ import {
 } from './schema';
 import { eq } from 'drizzle-orm';
 import { addDays, subDays, subMonths, addMonths } from 'date-fns';
+import bcrypt from 'bcryptjs';
 
 async function seed() {
   const hoje = new Date();
 
-  // Usuários
+  // Usuários com senha
   const userEmails = [
-    { email: 'admin@empresa.com.br', nome: 'Administrador', perfil: 'administrador' as const },
-    { email: 'carlos@empresa.com.br', nome: 'Carlos Souza', perfil: 'gestor' as const },
-    { email: 'ana@empresa.com.br', nome: 'Ana Lima', perfil: 'operacional' as const },
-    { email: 'financeiro@empresa.com.br', nome: 'Financeiro', perfil: 'financeiro' as const },
+    { email: 'admin@empresa.com.br', nome: 'Administrador', perfil: 'administrador' as const, senha: 'Admin@2026' },
+    { email: 'carlos@empresa.com.br', nome: 'Carlos Souza', perfil: 'gestor' as const, senha: 'Gestor@2026' },
+    { email: 'ana@empresa.com.br', nome: 'Ana Lima', perfil: 'operacional' as const, senha: 'Oper@2026' },
+    { email: 'financeiro@empresa.com.br', nome: 'Financeiro', perfil: 'financeiro' as const, senha: 'Fin@2026' },
   ];
 
   const userIds: Record<string, string> = {};
   for (const u of userEmails) {
+    const senhaHash = await bcrypt.hash(u.senha, 12);
     const existing = await db.select().from(usuarios).where(eq(usuarios.email, u.email));
     if (existing.length === 0) {
-      const [created] = await db.insert(usuarios).values(u).returning();
+      const [created] = await db.insert(usuarios).values({ email: u.email, nome: u.nome, perfil: u.perfil, senhaHash }).returning();
       userIds[u.email] = created.id;
     } else {
+      // Atualizar senha se usuário já existe
+      await db.update(usuarios).set({ senhaHash }).where(eq(usuarios.email, u.email));
       userIds[u.email] = existing[0].id;
     }
   }
