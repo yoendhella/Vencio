@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1773466953956,
+      "tag": "0000_nifty_edwin_jarvis",
+      "breakpoints": true
+    }
+  ]
+}
