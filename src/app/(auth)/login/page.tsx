@@ -34,32 +34,23 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      width: '100vw',
+      height: '100vh',
+      backgroundImage: "url('/vencio_logo_pack/background.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden',
       fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
     }}>
 
-      {/* ══ BACKGROUND ══ */}
-      <Image
-        src="/background.jpg"
-        alt=""
-        fill
-        style={{ objectFit: 'cover', objectPosition: 'center', zIndex: 0 }}
-        priority
-        quality={95}
-        unoptimized
-      />
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 1,
-        background: 'rgba(255,255,255,0.20)',
-      }} />
+      {/* Overlay sutil para contraste */}
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(13,27,62,0.15)', pointerEvents: 'none' }} />
 
       {/* ══ CARD ══ */}
-      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '420px', margin: '0 16px' }}>
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '420px', margin: '0 16px' }}>
 
         {/* Linha gradiente topo */}
         <div style={{
@@ -76,7 +67,7 @@ export default function LoginPage() {
           border: '1px solid rgba(255,255,255,0.90)',
           borderTop: 'none',
           borderRadius: '0 0 24px 24px',
-          boxShadow: '0 32px 80px rgba(13,27,62,0.20)',
+          boxShadow: '0 32px 80px rgba(13,27,62,0.22)',
           padding: '2rem',
           display: 'flex',
           flexDirection: 'column',
@@ -85,10 +76,10 @@ export default function LoginPage() {
           {/* ── LOGO TOPO ── */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.75rem' }}>
             <Image
-              src="/brand/Logo.menu1.png"
-              alt="Vencio"
+              src="/vencio_logo_pack/Logo.menu1.png"
+              alt="Logo Vencio"
               width={180}
-              height={54}
+              height={60}
               style={{ objectFit: 'contain' }}
               priority
               unoptimized
@@ -142,7 +133,7 @@ export default function LoginPage() {
                   borderRadius: '12px', color: '#0D1B3E',
                   fontSize: '14px', fontWeight: 500,
                   outline: 'none', transition: 'all 0.15s',
-                  fontFamily: 'inherit',
+                  fontFamily: 'inherit', boxSizing: 'border-box',
                 }}
                 onFocus={e => {
                   e.currentTarget.style.borderColor = '#1E5FD4';
@@ -177,7 +168,7 @@ export default function LoginPage() {
                     borderRadius: '12px', color: '#0D1B3E',
                     fontSize: '14px', fontWeight: 500,
                     outline: 'none', transition: 'all 0.15s',
-                    fontFamily: 'inherit',
+                    fontFamily: 'inherit', boxSizing: 'border-box',
                   }}
                   onFocus={e => {
                     e.currentTarget.style.borderColor = '#1E5FD4';
@@ -254,11 +245,11 @@ export default function LoginPage() {
             borderTop: '1px solid rgba(209,220,240,0.50)',
           }}>
             <Image
-              src="/brand/Logo.menu2.png"
-              alt="Vencio"
-              width={100}
-              height={30}
-              style={{ objectFit: 'contain', opacity: 0.50 }}
+              src="/vencio_logo_pack/Logo.menu2.png"
+              alt="Logo Vencio"
+              width={120}
+              height={40}
+              style={{ objectFit: 'contain', opacity: 0.5 }}
               unoptimized
             />
             <p style={{
