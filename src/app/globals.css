@@ -115,7 +115,12 @@
 
 @keyframes fadeIn    { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
 @keyframes slideUp   { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
-@keyframes pulseSoft { 0%,100% { opacity: 1 } 50% { opacity: 0.55 } }
+@keyframes pulseSoft  { 0%,100% { opacity: 1 } 50% { opacity: 0.55 } }
+@keyframes loadingBar {
+  0%   { width: 0%;  margin-left: 0%; }
+  50%  { width: 70%; margin-left: 15%; }
+  100% { width: 0%;  margin-left: 100%; }
+}
 
 /* ===== BASE ===== */
 *, *::before, *::after { box-sizing: border-box; }
@@ -273,4 +278,5 @@ body {
   .border-app   { border-color: var(--border); }
   .text-app     { color: var(--text-primary); }
   .badge-urgent { @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-500 text-white animate-pulse; }
+  .animate-loading-bar { animation: loadingBar 1.4s ease-in-out infinite; }
 }

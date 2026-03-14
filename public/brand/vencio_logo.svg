@@ -1,0 +1,9 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="400">
+  <rect width="100%" height="100%" fill="white"/>
+  <g transform="translate(40,50)">
+    <polyline points="60,20 150,250 240,20" stroke="rgb(22, 101, 216)" stroke-width="30" fill="none" stroke-linecap="round"/>
+    <polyline points="100,180 140,220 220,100" stroke="rgb(16, 185, 129)" stroke-width="24" fill="none" stroke-linecap="round"/>
+  </g>
+  <text x="380" y="200" font-size="120" font-family="DejaVu Sans, Arial" fill="rgb(17, 24, 39)">VENCIO</text>
+</svg>
