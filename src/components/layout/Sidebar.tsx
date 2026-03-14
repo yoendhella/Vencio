@@ -1,12 +1,13 @@
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, FileText, FilePlus, DollarSign, FolderOpen,
   Bell, TrendingUp, BarChart3, Users, History,
-  Shield, FileBarChart, Settings, ChevronRight,
+  Shield, FileBarChart, Settings, ChevronLeft, ChevronRight,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { VencioLogo, VencioAppIcon } from '@/components/ui/VencioLogo';
 import { useEffect, useState } from 'react';
 
 interface NavItem {
@@ -14,7 +15,6 @@ interface NavItem {
   href: string;
   icon: React.ElementType;
   badge?: string | number;
-  badgeColor?: string;
 }
 
 interface NavGroup {
@@ -32,9 +32,7 @@ function useAlertCount() {
           const data = await res.json();
           setCount(data.data?.total ?? 0);
         }
-      } catch {
-        // silently fail
-      }
+      } catch { /* silently fail */ }
     };
     fetchCount();
     const interval = setInterval(fetchCount, 30000);
@@ -46,6 +44,7 @@ function useAlertCount() {
 export function Sidebar() {
   const pathname = usePathname();
   const alertCount = useAlertCount();
+  const [collapsed, setCollapsed] = useState(false);
 
   const groups: NavGroup[] = [
     {
@@ -64,7 +63,7 @@ export function Sidebar() {
     {
       title: 'Operacional',
       items: [
-        { label: 'Alertas', href: '/alertas', icon: Bell, badge: alertCount > 0 ? alertCount : undefined, badgeColor: 'bg-red-100 text-red-700' },
+        { label: 'Alertas', href: '/alertas', icon: Bell, badge: alertCount > 0 ? alertCount : undefined },
         { label: 'Reajustes', href: '/reajuste', icon: TrendingUp },
         { label: 'SLA / Entregas', href: '/sla', icon: BarChart3 },
       ],
@@ -87,55 +86,84 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen overflow-y-auto">
-      <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-pri rounded-lg flex items-center justify-center">
-            <FileText className="h-4 w-4 text-white" />
-          </div>
-          <span className="font-bold text-gray-900 dark:text-white text-lg">ContratoPro</span>
-        </div>
+    <aside
+      className="flex-shrink-0 flex flex-col h-screen transition-all duration-300 ease-in-out"
+      style={{
+        width: collapsed ? 64 : 240,
+        background: 'linear-gradient(180deg, #0D1B3E 0%, #132240 100%)',
+        boxShadow: '4px 0 24px rgba(13,27,62,0.2)',
+      }}
+    >
+      {/* Logo */}
+      <div className="flex items-center justify-between px-4 h-16 flex-shrink-0 border-b border-white/10">
+        {collapsed
+          ? <VencioAppIcon size={38} />
+          : <VencioLogo variant="white" size={28} />
+        }
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center justify-center w-7 h-7 rounded-md text-white/40 hover:text-white hover:bg-white/10 transition-all duration-150 cursor-pointer ml-auto flex-shrink-0"
+        >
+          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-6">
+      {/* Nav */}
+      <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden">
         {groups.map((group) => (
-          <div key={group.title}>
-            <p className="px-3 mb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">{group.title}</p>
-            {group.items.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-0.5',
-                    active
-                      ? 'bg-blue-50 dark:bg-blue-950 text-pri font-medium'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
-                  )}
-                >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
-                  <span className="flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className={cn('text-xs px-1.5 py-0.5 rounded-full font-medium', item.badgeColor ?? 'bg-gray-100 text-gray-600')}>
-                      {item.badge}
-                    </span>
-                  )}
-                  {active && <ChevronRight className="h-3 w-3" />}
-                </Link>
-              );
-            })}
+          <div key={group.title} className="mb-4">
+            {!collapsed && (
+              <p className="px-5 mb-1 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                {group.title}
+              </p>
+            )}
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map(({ label, href, icon: Icon, badge }) => {
+                const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={`flex items-center gap-3 mx-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer ${
+                        collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2'
+                      } ${
+                        active
+                          ? 'bg-white/[0.12] text-white'
+                          : 'text-white/60 hover:bg-white/[0.07] hover:text-white'
+                      }`}
+                      style={active && !collapsed ? { borderLeft: '3px solid #00C97A', paddingLeft: 'calc(0.75rem - 3px)' } : undefined}
+                    >
+                      <Icon
+                        size={18}
+                        className="flex-shrink-0"
+                        style={{ color: active ? '#00C97A' : undefined }}
+                      />
+                      {!collapsed && (
+                        <>
+                          <span className="flex-1 truncate">{label}</span>
+                          {badge !== undefined && (
+                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold">
+                              {badge}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         ))}
       </nav>
 
-      <SidebarFooter />
+      {/* Footer */}
+      <SidebarFooter collapsed={collapsed} />
     </aside>
   );
 }
 
-function SidebarFooter() {
+function SidebarFooter({ collapsed }: { collapsed: boolean }) {
   const [kpis, setKpis] = useState<{ ativos?: number; criticos?: number } | null>(null);
 
   useEffect(() => {
@@ -145,24 +173,25 @@ function SidebarFooter() {
       .catch(() => null);
   }, []);
 
-  const now = new Date();
-  const mes = now.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+  const mes = new Date().toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+
+  if (collapsed) return <div className="h-12 border-t border-white/10" />;
 
   return (
-    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-800">
-      <p className="text-xs text-gray-400">
+    <div className="px-5 py-3 border-t border-white/10">
+      <p className="text-[11px] text-white/40">
         {kpis ? (
           <>
-            <span className="font-medium text-green-600">{kpis.ativos ?? 0} ativos</span>
+            <span className="text-[#00C97A] font-semibold">{kpis.ativos ?? 0} ativos</span>
             {' · '}
-            <span className="font-medium text-red-600">{kpis.criticos ?? 0} críticos</span>
+            <span className="text-red-400 font-semibold">{kpis.criticos ?? 0} críticos</span>
             {' · '}
             {mes}
           </>
-        ) : (
-          <span className="text-gray-400">{mes}</span>
-        )}
+        ) : mes}
       </p>
     </div>
   );
 }
+
+export default Sidebar;
