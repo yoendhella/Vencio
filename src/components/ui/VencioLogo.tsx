@@ -1,100 +1,158 @@
 'use client';
 
-import Image from 'next/image';
-import { useState } from 'react';
+// ══════════════════════════════════════════════
+// VENCIO LOGO — 6 variações do brand board oficial
+// ══════════════════════════════════════════════
 
-type LogoVariant = 'full' | 'icon' | 'white' | 'dark';
+type IconVariant =
+  | 'default'      // 1. V gradiente (principal)
+  | 'square-navy'  // 2. V quadrado navy (app icon)
+  | 'square-green' // 3. Checkmark quadrado verde
+  | 'calendar'     // 4. Calendário com check
+  | 'circle'       // 5. V círculo azul
+  | 'outline';     // 6. V outline verde
 
+interface VencioIconProps {
+  variant?: IconVariant;
+  size?: number;
+  className?: string;
+}
+
+export function VencioIcon({ variant = 'default', size = 32, className = '' }: VencioIconProps) {
+  const id = `vi-${variant}-${size}`;
+
+  // ── 1. V GRADIENTE PRINCIPAL ──
+  if (variant === 'default') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#1E5FD4" />
+          <stop offset="50%"  stopColor="#2EB8E6" />
+          <stop offset="100%" stopColor="#00C97A" />
+        </linearGradient>
+        <linearGradient id={`${id}-b`} x1="28" y1="44" x2="72" y2="72" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#2EB8E6" />
+          <stop offset="100%" stopColor="#00C97A" />
+        </linearGradient>
+      </defs>
+      <path d="M8 16 L40 82 L50 60 L27 16 Z"  fill={`url(#${id}-a)`} opacity="0.92" />
+      <path d="M92 16 L60 82 L50 60 L73 16 Z" fill={`url(#${id}-a)`} />
+      <path d="M29 52 L43 68 L71 37" stroke={`url(#${id}-b)`} strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  // ── 2. V QUADRADO NAVY (app icon) ──
+  if (variant === 'square-navy') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`${id}-bg`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#0D1B3E" />
+          <stop offset="100%" stopColor="#132240" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill={`url(#${id}-bg)`} />
+      <path d="M18 22 L44 72 L50 58 L30 22 Z"  fill="white" opacity="0.9" />
+      <path d="M82 22 L56 72 L50 58 L70 22 Z"  fill="white" />
+      <path d="M33 53 L44 66 L67 41" stroke="#00C97A" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  // ── 3. CHECKMARK QUADRADO VERDE ──
+  if (variant === 'square-green') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#00C97A" />
+          <stop offset="100%" stopColor="#009E5A" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill={`url(#${id}-g)`} />
+      <path d="M25 50 L42 68 L75 32" stroke="white" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  // ── 4. CALENDÁRIO COM CHECK ──
+  if (variant === 'calendar') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <rect x="10" y="18" width="80" height="72" rx="12" fill="none" stroke="#0D1B3E" strokeWidth="6" />
+      <line x1="10" y1="38" x2="90" y2="38" stroke="#0D1B3E" strokeWidth="5" />
+      <line x1="32" y1="10" x2="32" y2="26" stroke="#1E5FD4" strokeWidth="6" strokeLinecap="round" />
+      <line x1="68" y1="10" x2="68" y2="26" stroke="#1E5FD4" strokeWidth="6" strokeLinecap="round" />
+      <path d="M30 60 L44 74 L70 48" stroke="#00C97A" strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  // ── 5. V CÍRCULO AZUL ──
+  if (variant === 'circle') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <defs>
+        <linearGradient id={`${id}-c`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#1E5FD4" />
+          <stop offset="100%" stopColor="#2EB8E6" />
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill={`url(#${id}-c)`} />
+      <path d="M20 28 L44 72 L50 58 L32 28 Z"  fill="white" opacity="0.92" />
+      <path d="M80 28 L56 72 L50 58 L68 28 Z"  fill="white" />
+      <path d="M33 52 L44 64 L67 40" stroke="#00C97A" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  // ── 6. V OUTLINE VERDE ──
+  if (variant === 'outline') return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+      <path d="M8 16 L40 82 L50 60 L27 16 Z"  fill="none" stroke="#00C97A" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M92 16 L60 82 L50 60 L73 16 Z" fill="none" stroke="#00C97A" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M29 52 L43 68 L71 37" stroke="#1E5FD4" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+
+  return null;
+}
+
+// ── LOGO COMPLETO (ícone + texto) ──
 interface VencioLogoProps {
-  variant?: LogoVariant;
+  variant?: 'light' | 'dark' | 'white';
   size?: number;
   className?: string;
   showTagline?: boolean;
 }
 
-const LOGO_FILES: Record<LogoVariant, string> = {
-  full:  '/brand/vencio_logo_transparent.png',
-  white: '/brand/vencio_logo_white.png',
-  dark:  '/brand/vencio_logo_transparent.png',
-  icon:  '/brand/vencio_icon_128.png',
-};
+export function VencioLogo({ variant = 'dark', size = 32, className = '', showTagline = false }: VencioLogoProps) {
+  const textColor =
+    variant === 'white' ? '#FFFFFF' :
+    variant === 'light' ? '#0D1B3E' :
+    'var(--text-primary)';
 
-// Fallback SVG puro (sem dependência de arquivo externo)
-function VencioSvgFallback({ variant, size }: { variant: LogoVariant; size: number }) {
-  const uid = `vg-fb-${variant}-${size}`;
-  const isWhite = variant === 'white';
+  const tagColor =
+    variant === 'white' ? 'rgba(255,255,255,0.5)' : 'var(--text-secondary)';
 
   return (
-    <div className="flex items-center gap-2.5">
-      <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id={`${uid}-a`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stopColor={isWhite ? '#ffffff' : '#1E5FD4'} />
-            <stop offset="55%"  stopColor={isWhite ? '#ffffff' : '#2EB8E6'} />
-            <stop offset="100%" stopColor={isWhite ? '#ffffff' : '#00C97A'} />
-          </linearGradient>
-        </defs>
-        <path d="M8 16 L40 80 L50 60 L28 16 Z" fill={`url(#${uid}-a)`} opacity="0.92" />
-        <path d="M92 16 L60 80 L50 60 L72 16 Z" fill={`url(#${uid}-a)`} />
-        <path d="M31 52 L44 66 L69 38"
-          stroke="white" strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
-        />
-      </svg>
-      {variant !== 'icon' && (
-        <span
-          className="font-extrabold tracking-tight leading-none"
-          style={{
-            fontSize: Math.round(size * 0.78),
-            color: isWhite ? '#ffffff' : '#0D1B3E',
-          }}
-        >
+    <div className={`flex flex-col ${className}`} style={{ userSelect: 'none' }}>
+      <div className="flex items-center" style={{ gap: Math.round(size * 0.28) }}>
+        <VencioIcon variant="default" size={size} />
+        <span style={{
+          fontSize: Math.round(size * 0.75),
+          fontWeight: 800,
+          letterSpacing: '-0.03em',
+          color: textColor,
+          lineHeight: 1,
+          fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+        }}>
           VENCIO
         </span>
-      )}
-    </div>
-  );
-}
-
-export function VencioLogo({
-  variant = 'full',
-  size = 32,
-  className = '',
-  showTagline = false,
-}: VencioLogoProps) {
-  const [imgError, setImgError] = useState(false);
-
-  if (imgError) {
-    return (
-      <div className={`flex flex-col ${className}`}>
-        <VencioSvgFallback variant={variant} size={size} />
-        {showTagline && (
-          <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mt-1"
-            style={{ paddingLeft: size + 10, color: variant === 'white' ? 'rgba(255,255,255,0.6)' : '#5A6B7D' }}>
-            Controle Inteligente de Contratos
-          </p>
-        )}
       </div>
-    );
-  }
-
-  const src = LOGO_FILES[variant];
-  const isIcon = variant === 'icon';
-
-  return (
-    <div className={`flex flex-col ${className}`}>
-      <Image
-        src={src}
-        alt="Vencio"
-        width={isIcon ? size : Math.round(size * 4.2)}
-        height={size}
-        className="object-contain"
-        onError={() => setImgError(true)}
-        priority
-        unoptimized
-      />
       {showTagline && (
-        <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mt-1"
-          style={{ paddingLeft: size + 10, color: variant === 'white' ? 'rgba(255,255,255,0.6)' : '#5A6B7D' }}>
+        <p style={{
+          fontSize: Math.round(size * 0.26),
+          fontWeight: 600,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: tagColor,
+          paddingLeft: size + Math.round(size * 0.28),
+          marginTop: 4,
+          fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+        }}>
           Controle Inteligente de Contratos
         </p>
       )}
@@ -102,35 +160,17 @@ export function VencioLogo({
   );
 }
 
-export function VencioAppIcon({ size = 56 }: { size?: number }) {
-  const [imgError, setImgError] = useState(false);
-  const iconSize = Math.round(size * 0.62);
-
+// ── APP ICON (sidebar colapsada) ──
+export function VencioAppIcon({ size = 48 }: { size?: number }) {
   return (
-    <div
-      className="flex items-center justify-center flex-shrink-0"
-      style={{
-        width: size,
-        height: size,
-        borderRadius: Math.round(size * 0.22),
-        background: 'linear-gradient(145deg, #0D1B3E 0%, #132240 100%)',
-        boxShadow: '0 4px 16px rgba(13,27,62,0.45)',
-      }}
-    >
-      {imgError ? (
-        <VencioSvgFallback variant="white" size={iconSize} />
-      ) : (
-        <Image
-          src="/brand/vencio_icon_128.png"
-          alt="Vencio"
-          width={iconSize}
-          height={iconSize}
-          className="object-contain"
-          onError={() => setImgError(true)}
-          priority
-          unoptimized
-        />
-      )}
+    <div style={{
+      width: size, height: size,
+      borderRadius: Math.round(size * 0.22),
+      background: 'linear-gradient(145deg, #0D1B3E 0%, #132240 100%)',
+      boxShadow: '0 4px 20px rgba(13,27,62,0.5), 0 0 0 1px rgba(30,95,212,0.25)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    }}>
+      <VencioIcon variant="default" size={Math.round(size * 0.60)} />
     </div>
   );
 }
