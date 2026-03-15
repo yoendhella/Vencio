@@ -87,91 +87,105 @@ export function Sidebar() {
 
   return (
     <aside
-      className="flex-shrink-0 flex flex-col h-screen transition-all duration-300 ease-in-out"
+      className="flex-shrink-0 flex flex-col h-screen transition-all duration-300 ease-in-out overflow-hidden"
       style={{
-        width: collapsed ? 64 : 240,
-        background: 'var(--surface)',
-        borderRight: '1px solid var(--border)',
-        boxShadow: '4px 0 16px rgba(13,27,62,0.07)',
+        width: collapsed ? 68 : 240,
+        background: '#0b1733',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
       }}
     >
-      {/* Logo */}
+      {/* Logo header */}
       <div
         className="flex items-center justify-between px-4 h-16 flex-shrink-0"
-        style={{ borderBottom: '1px solid var(--border)' }}
+        style={{
+          background: 'linear-gradient(135deg, #091424 0%, #0e2245 50%, #0b2040 100%)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}
       >
         {collapsed
-          ? <VencioIcon variant="default" size={30} />
-          : <VencioLogo variant="dark" size={26} />
+          ? <VencioIcon variant="default" size={28} />
+          : <VencioLogo variant="white" size={22} />
         }
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="flex items-center justify-center w-7 h-7 rounded-md transition-all duration-150 cursor-pointer ml-auto flex-shrink-0"
-          style={{ color: 'var(--text-muted)' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          style={{ color: 'rgba(255,255,255,0.35)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden" style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}>
+      <nav
+        className="flex-1 overflow-y-auto overflow-x-hidden py-2.5"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}
+      >
         {groups.map((group) => (
           <div key={group.title} className="mb-3">
             {!collapsed && (
               <p
-                className="px-5 mb-1 text-[9px] font-bold uppercase tracking-[1.8px]"
-                style={{ color: 'var(--text-muted)' }}
+                className="px-[18px] pt-3 pb-1 text-[9px] font-bold uppercase tracking-[1.8px] whitespace-nowrap overflow-hidden"
+                style={{ color: 'rgba(232,238,248,0.25)' }}
               >
                 {group.title}
               </p>
             )}
-            <ul className="flex flex-col gap-0.5">
+            <ul className="flex flex-col" style={{ gap: 1 }}>
               {group.items.map(({ label, href, icon: Icon, badge }) => {
                 const active = pathname === href || (href !== '/' && pathname.startsWith(href));
                 return (
                   <li key={href}>
                     <Link
                       href={href}
-                      className={`flex items-center gap-2.5 mx-2 rounded-lg text-[13px] font-medium transition-all duration-150 cursor-pointer relative ${
-                        collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2'
-                      }`}
+                      className="flex items-center gap-2.5 mx-[7px] rounded-lg text-[13px] font-medium transition-all duration-150 cursor-pointer relative overflow-hidden whitespace-nowrap"
                       style={{
-                        background: active
-                          ? 'rgba(37,99,235,0.10)'
-                          : 'transparent',
-                        color: active
-                          ? '#2563eb'
-                          : 'var(--text-secondary)',
+                        padding: collapsed ? '9px 14px' : '9px 14px',
+                        justifyContent: collapsed ? 'center' : undefined,
+                        background: active ? 'rgba(37,99,235,0.22)' : 'transparent',
+                        color: active ? '#93c5fd' : 'rgba(232,238,248,0.58)',
                         fontWeight: active ? 600 : 500,
-                        borderLeft: active && !collapsed ? '3px solid #10b981' : undefined,
-                        paddingLeft: active && !collapsed ? 'calc(0.75rem - 3px)' : undefined,
                       }}
                       onMouseEnter={e => {
-                        if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--surface-2)';
+                        if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                        if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(232,238,248,0.9)';
                       }}
                       onMouseLeave={e => {
                         if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        if (!active) (e.currentTarget as HTMLElement).style.color = 'rgba(232,238,248,0.58)';
                       }}
                     >
-                      <Icon
-                        size={16}
-                        className="flex-shrink-0"
-                        style={{ color: active ? '#10b981' : 'var(--text-muted)', opacity: active ? 1 : 0.8 }}
-                      />
+                      {/* Left accent bar */}
+                      {active && (
+                        <span
+                          className="absolute left-0"
+                          style={{
+                            top: '20%', bottom: '20%', width: 3,
+                            borderRadius: '0 2px 2px 0',
+                            background: 'linear-gradient(180deg, #2563eb, #10b981)',
+                          }}
+                        />
+                      )}
+                      <Icon size={15} className="flex-shrink-0" />
                       {!collapsed && (
                         <>
                           <span className="flex-1 truncate">{label}</span>
                           {badge !== undefined && (
-                            <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[9.5px] font-bold">
+                            <span
+                              className="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9.5px] font-bold flex-shrink-0"
+                              style={{ background: '#ef4444' }}
+                            >
                               {badge}
                             </span>
                           )}
                         </>
                       )}
                       {collapsed && badge !== undefined && (
-                        <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
+                        <span
+                          className="absolute rounded-full"
+                          style={{ top: 4, right: 4, width: 7, height: 7, background: '#ef4444' }}
+                        />
                       )}
                     </Link>
                   </li>
@@ -200,21 +214,25 @@ function SidebarFooter({ collapsed }: { collapsed: boolean }) {
 
   const mes = new Date().toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
 
-  if (collapsed) return <div className="h-12" style={{ borderTop: '1px solid var(--border)' }} />;
-
   return (
-    <div className="px-5 py-3" style={{ borderTop: '1px solid var(--border)' }}>
-      <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
-        {kpis ? (
+    <div
+      className="px-3 py-2.5 text-[10px] text-center flex-shrink-0 whitespace-nowrap overflow-hidden"
+      style={{
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        color: 'rgba(232,238,248,0.28)',
+      }}
+    >
+      {!collapsed && (
+        kpis ? (
           <>
-            <span className="font-semibold" style={{ color: '#10b981' }}>{kpis.ativos ?? 0} ativos</span>
+            <span style={{ color: '#10b981', fontWeight: 600 }}>{kpis.ativos ?? 0} ativos</span>
             {' · '}
-            <span className="font-semibold" style={{ color: '#ef4444' }}>{kpis.criticos ?? 0} críticos</span>
+            <span style={{ color: '#ef4444', fontWeight: 600 }}>{kpis.criticos ?? 0} críticos</span>
             {' · '}
             {mes}
           </>
-        ) : mes}
-      </p>
+        ) : mes
+      )}
     </div>
   );
 }
