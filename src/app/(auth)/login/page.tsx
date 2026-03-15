@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 
@@ -17,6 +17,34 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState('');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const img = new Image();
+    img.onload = () => {
+      const W = img.naturalWidth;
+      const H = img.naturalHeight;
+      canvas.width  = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, W, H);
+      const px = imageData.data;
+      for (let i = 0; i < px.length; i += 4) {
+        const r = px[i], g = px[i + 1], b = px[i + 2];
+        const lum = (r + g + b) / 3;
+        const sat = Math.max(r, g, b) - Math.min(r, g, b);
+        if (lum > 215 && sat < 35) {
+          px[i + 3] = Math.round((1 - Math.min(1, (lum - 215) / 30)) * 255);
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    };
+    img.src = '/vencio_logo_pack/Logo.menu1.png';
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,15 +106,11 @@ export default function LoginPage() {
           padding: 0 8px;
         }
 
-        .vc-logo-img {
-          width: 100%;
+        .vc-logo-canvas {
           max-width: 300px;
+          width: 100%;
           height: auto;
           display: block;
-          object-fit: contain;
-          mix-blend-mode: multiply;
-          user-select: none;
-          -webkit-user-drag: none;
         }
 
         .vc-fields {
@@ -220,7 +244,7 @@ export default function LoginPage() {
 
         @media (max-width: 520px) {
           .vc-card { padding: 36px 24px 30px; margin: 16px; }
-          .vc-logo-img { max-width: 240px; }
+          .vc-logo-canvas { max-width: 240px; }
           .vc-badges { flex-wrap: wrap; }
         }
       `}</style>
@@ -229,12 +253,10 @@ export default function LoginPage() {
         <div className="vc-card">
 
           <div className="vc-logo-wrap">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="vc-logo-img"
-              src="/vencio_logo_pack/Logo.menu1.png"
-              alt="Vencio — Controle Inteligente de Contratos"
-              draggable={false}
+            <canvas
+              ref={canvasRef}
+              className="vc-logo-canvas"
+              aria-label="Vencio — Controle Inteligente de Contratos"
             />
           </div>
 
