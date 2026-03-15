@@ -33,9 +33,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{
-      width: '100vw',
-      height: '100vh',
+    <div id="login-root" style={{
+      minHeight: '100vh',
+      width: '100%',
       backgroundImage: "url('/vencio_logo_pack/background.jpg')",
       backgroundSize: 'cover',
       backgroundPosition: 'center',
@@ -249,7 +249,7 @@ export default function LoginPage() {
               alt="Logo Vencio"
               width={120}
               height={40}
-              style={{ objectFit: 'contain', opacity: 0.5 }}
+              style={{ objectFit: 'contain' }}
               unoptimized
             />
             <p style={{
