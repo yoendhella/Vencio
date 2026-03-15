@@ -28,25 +28,18 @@ export default async function HistoricoPage() {
         <PageHeader title="Histórico" description="Contratos encerrados e histórico" />
         <ExportButtons
           data={lista.map((c) => ({
-            numero: c.numero,
-            nome: c.nome,
-            fornecedorNome: c.fornecedorNome ?? '',
-            categoria: c.categoria,
-            situacao: c.situacao,
-            dataInicio: formatDate(c.dataInicio),
-            dataTermino: formatDate(c.dataTermino),
+            Número: c.numero,
+            Contrato: c.nome,
+            Fornecedor: c.fornecedorNome ?? '',
+            Categoria: c.categoria,
+            Situação: c.situacao,
+            Início: formatDate(c.dataInicio),
+            Término: formatDate(c.dataTermino),
           }))}
-          columns={[
-            { key: 'numero', label: 'Número' },
-            { key: 'nome', label: 'Contrato' },
-            { key: 'fornecedorNome', label: 'Fornecedor' },
-            { key: 'categoria', label: 'Categoria' },
-            { key: 'situacao', label: 'Situação' },
-            { key: 'dataInicio', label: 'Início' },
-            { key: 'dataTermino', label: 'Término' },
-          ]}
           filename="historico-contratos"
-          title="Histórico de Contratos"
+          pdfTitle="Histórico de Contratos"
+          columns={['Número', 'Contrato', 'Fornecedor', 'Categoria', 'Situação', 'Início', 'Término']}
+          rows={lista.map((c) => [c.numero, c.nome, c.fornecedorNome ?? '', c.categoria, c.situacao, formatDate(c.dataInicio), formatDate(c.dataTermino)])}
         />
       </div>
       <div className="space-y-3">

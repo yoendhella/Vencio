@@ -70,19 +70,20 @@ export function ContractTable() {
           <option value="suspenso">Suspenso</option>
         </select>
         <ExportButtons
-          data={contratos as unknown as Record<string, unknown>[]}
-          columns={[
-            { key: 'numero', label: 'Número' },
-            { key: 'nome', label: 'Contrato' },
-            { key: 'departamento', label: 'Departamento' },
-            { key: 'categoria', label: 'Categoria' },
-            { key: 'valorMensal', label: 'Valor Mensal', format: (v) => formatCurrency(v as string) },
-            { key: 'indicadorReajuste', label: 'Índice' },
-            { key: 'dataTermino', label: 'Vencimento', format: (v) => formatDate(v as string) },
-            { key: 'situacao', label: 'Situação' },
-          ]}
+          data={contratos.map((c) => ({
+            Número: c.numero,
+            Contrato: c.nome,
+            Departamento: c.departamento,
+            Categoria: c.categoria,
+            'Valor Mensal': formatCurrency(c.valorMensal),
+            Índice: c.indicadorReajuste,
+            Vencimento: formatDate(c.dataTermino),
+            Situação: c.situacao,
+          }))}
           filename="contratos"
-          title="Relatório de Contratos"
+          pdfTitle="Relatório de Contratos"
+          columns={['Número', 'Contrato', 'Departamento', 'Categoria', 'Valor Mensal', 'Índice', 'Vencimento', 'Situação']}
+          rows={contratos.map((c) => [c.numero, c.nome, c.departamento, c.categoria, formatCurrency(c.valorMensal), c.indicadorReajuste, formatDate(c.dataTermino), c.situacao])}
         />
         <Button size="sm" onClick={() => { setEditingId(null); setModalOpen(true); }}>
           <Plus className="h-4 w-4" /> Novo contrato

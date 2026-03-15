@@ -35,20 +35,21 @@ export function FornecedorTable() {
     <>
       <FilterBar search={search} onSearch={setSearch}>
         <ExportButtons
-          data={fornecedores as unknown as Record<string, unknown>[]}
-          columns={[
-            { key: 'razaoSocial', label: 'Razão Social' },
-            { key: 'cnpj', label: 'CNPJ' },
-            { key: 'categoria', label: 'Categoria' },
-            { key: 'notaQualidade', label: 'Qualidade' },
-            { key: 'notaPrazo', label: 'Prazo' },
-            { key: 'notaComunicacao', label: 'Comunicação' },
-            { key: 'notaConformidade', label: 'Conformidade' },
-            { key: 'totalOcorrencias', label: 'Ocorrências' },
-            { key: 'ativo', label: 'Status', format: (v) => v ? 'Ativo' : 'Inativo' },
-          ]}
+          data={fornecedores.map((f) => ({
+            'Razão Social': f.razaoSocial,
+            CNPJ: f.cnpj,
+            Categoria: f.categoria,
+            Qualidade: f.notaQualidade ?? '',
+            Prazo: f.notaPrazo ?? '',
+            Comunicação: f.notaComunicacao ?? '',
+            Conformidade: f.notaConformidade ?? '',
+            Ocorrências: f.totalOcorrencias,
+            Status: f.ativo ? 'Ativo' : 'Inativo',
+          }))}
           filename="fornecedores"
-          title="Relatório de Fornecedores"
+          pdfTitle="Relatório de Fornecedores"
+          columns={['Razão Social', 'CNPJ', 'Categoria', 'Qualidade', 'Prazo', 'Comunicação', 'Conformidade', 'Ocorrências', 'Status']}
+          rows={fornecedores.map((f) => [f.razaoSocial, f.cnpj, f.categoria, f.notaQualidade ?? '', f.notaPrazo ?? '', f.notaComunicacao ?? '', f.notaConformidade ?? '', f.totalOcorrencias, f.ativo ? 'Ativo' : 'Inativo'])}
         />
       </FilterBar>
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">

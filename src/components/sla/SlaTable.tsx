@@ -44,18 +44,19 @@ export function SlaTable() {
 
       <div className="flex justify-end mb-3">
         <ExportButtons
-          data={items as unknown as Record<string, unknown>[]}
-          columns={[
-            { key: 'numero', label: 'Número' },
-            { key: 'nome', label: 'Contrato' },
-            { key: 'fornecedorNome', label: 'Fornecedor' },
-            { key: 'slaIndicador', label: 'Indicador' },
-            { key: 'slaMeta', label: 'Meta (%)' },
-            { key: 'slaRealizado', label: 'Realizado (%)' },
-            { key: 'slaStatus', label: 'Status' },
-          ]}
+          data={items.map((i) => ({
+            Número: i.numero,
+            Contrato: i.nome,
+            Fornecedor: i.fornecedorNome ?? '',
+            Indicador: i.slaIndicador ?? '',
+            'Meta (%)': i.slaMeta ?? '',
+            'Realizado (%)': i.slaRealizado ?? '',
+            Status: i.slaStatus ?? '',
+          }))}
           filename="sla-contratos"
-          title="Relatório SLA / Entregas"
+          pdfTitle="Relatório SLA / Entregas"
+          columns={['Número', 'Contrato', 'Fornecedor', 'Indicador', 'Meta (%)', 'Realizado (%)', 'Status']}
+          rows={items.map((i) => [i.numero, i.nome, i.fornecedorNome ?? '', i.slaIndicador ?? '', i.slaMeta ?? '', i.slaRealizado ?? '', i.slaStatus ?? ''])}
         />
       </div>
 

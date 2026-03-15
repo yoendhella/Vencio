@@ -1,84 +1,83 @@
 import * as XLSX from 'xlsx';
 
-export interface ExportColumn {
-  key: string;
-  label: string;
-  format?: (value: unknown) => string;
-}
-
-// ── EXCEL EXPORT ──────────────────────────────────────────────
-export function exportToExcel<T extends Record<string, unknown>>(
-  data: T[],
-  columns: ExportColumn[],
-  filename: string
+// ── EXCEL ─────────────────────────────────────────────────────────────────────
+export function exportToExcel(
+  data: Record<string, unknown>[],
+  filename: string,
+  sheetName = 'Dados'
 ) {
-  const rows = data.map((item) => {
-    const row: Record<string, string> = {};
-    for (const col of columns) {
-      const value = item[col.key];
-      row[col.label] = col.format ? col.format(value) : String(value ?? '');
-    }
-    return row;
-  });
-
-  const ws = XLSX.utils.json_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Dados');
+  const ws = XLSX.utils.json_to_sheet(data);
 
   // Auto column width
-  const colWidths = columns.map((col) => ({
-    wch: Math.max(
-      col.label.length,
-      ...rows.map((r) => String(r[col.label] ?? '').length)
-    ) + 2,
-  }));
-  ws['!cols'] = colWidths;
+  if (data.length > 0) {
+    const keys = Object.keys(data[0]);
+    ws['!cols'] = keys.map((k) => ({
+      wch: Math.max(
+        k.length,
+        ...data.map((r) => String(r[k] ?? '').length)
+      ) + 2,
+    }));
+  }
 
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
   XLSX.writeFile(wb, `${filename}.xlsx`);
 }
 
-// ── PDF EXPORT ────────────────────────────────────────────────
-export async function exportToPDF<T extends Record<string, unknown>>(
-  data: T[],
-  columns: ExportColumn[],
-  filename: string,
-  title: string
-) {
+// ── PDF ───────────────────────────────────────────────────────────────────────
+export interface PdfOptions {
+  title: string;
+  filename: string;
+  columns: string[];
+  rows: (string | number)[][];
+  filters?: string;
+  orientation?: 'portrait' | 'landscape';
+}
+
+export async function exportToPDF({
+  title,
+  filename,
+  columns,
+  rows,
+  filters,
+  orientation = 'landscape',
+}: PdfOptions) {
   const { default: jsPDF } = await import('jspdf');
   const { default: autoTable } = await import('jspdf-autotable');
 
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const doc = new jsPDF({ orientation, unit: 'mm', format: 'a4' });
+  const pageW = orientation === 'landscape' ? 297 : 210;
 
-  // Header
+  // Header bar
   doc.setFillColor(13, 27, 62);
-  doc.rect(0, 0, 297, 20, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.text(title, 14, 13);
+  doc.rect(0, 0, pageW, 22, 'F');
 
-  // Date
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, 14, 14);
+
   const now = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   });
-  doc.text(`Gerado em: ${now}`, 280, 13, { align: 'right' });
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Gerado em: ${now}`, pageW - 14, 14, { align: 'right' });
 
-  // Table
-  const head = [columns.map((c) => c.label)];
-  const body = data.map((item) =>
-    columns.map((col) => {
-      const value = item[col.key];
-      return col.format ? col.format(value) : String(value ?? '');
-    })
-  );
+  // Filters line
+  let startY = 28;
+  if (filters) {
+    doc.setTextColor(80, 80, 80);
+    doc.setFontSize(8);
+    doc.text(`Filtros: ${filters}`, 14, startY);
+    startY += 6;
+  }
 
   autoTable(doc, {
-    head,
-    body,
-    startY: 24,
+    head: [columns],
+    body: rows.map((r) => r.map(String)),
+    startY,
     styles: { fontSize: 8, cellPadding: 3 },
     headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -86,32 +85,4 @@ export async function exportToPDF<T extends Record<string, unknown>>(
   });
 
   doc.save(`${filename}.pdf`);
-}
-
-// ── CSV EXPORT ────────────────────────────────────────────────
-export function exportToCSV<T extends Record<string, unknown>>(
-  data: T[],
-  columns: ExportColumn[],
-  filename: string
-) {
-  const header = columns.map((c) => `"${c.label}"`).join(';');
-  const rows = data.map((item) =>
-    columns
-      .map((col) => {
-        const value = item[col.key];
-        const str = col.format ? col.format(value) : String(value ?? '');
-        return `"${str.replace(/"/g, '""')}"`;
-      })
-      .join(';')
-  );
-
-  const bom = '\uFEFF'; // UTF-8 BOM for Excel compatibility
-  const csv = bom + [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${filename}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
 }

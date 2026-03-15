@@ -38,16 +38,17 @@ export default function AuditoriaPage() {
       </div>
       <FilterBar search={search} onSearch={setSearch}>
         <ExportButtons
-          data={logs as unknown as Record<string, unknown>[]}
-          columns={[
-            { key: 'criadoEm', label: 'Data/Hora', format: (v) => formatDate(v as string) },
-            { key: 'nomeUsuario', label: 'Usuário' },
-            { key: 'acao', label: 'Ação' },
-            { key: 'entidade', label: 'Entidade' },
-            { key: 'detalhes', label: 'Detalhes' },
-          ]}
+          data={logs.map((l) => ({
+            'Data/Hora': formatDate(l.criadoEm),
+            Usuário: l.nomeUsuario,
+            Ação: l.acao,
+            Entidade: l.entidade,
+            Detalhes: l.detalhes ?? '',
+          }))}
           filename="auditoria"
-          title="Log de Auditoria"
+          pdfTitle="Log de Auditoria"
+          columns={['Data/Hora', 'Usuário', 'Ação', 'Entidade', 'Detalhes']}
+          rows={logs.map((l) => [formatDate(l.criadoEm), l.nomeUsuario, l.acao, l.entidade, l.detalhes ?? ''])}
         />
       </FilterBar>
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">

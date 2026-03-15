@@ -102,17 +102,7 @@ const inputStyle: React.CSSProperties = {
   outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
 };
 
-const EXPORT_COLS = [
-  { key: 'nome', label: 'Unidade' },
-  { key: 'tipo', label: 'Tipo' },
-  { key: 'cnpj', label: 'CNPJ' },
-  { key: 'cep', label: 'CEP' },
-  { key: 'rua', label: 'Endereço' },
-  { key: 'cidade', label: 'Cidade' },
-  { key: 'estado', label: 'UF' },
-  { key: 'responsavel', label: 'Responsável' },
-  { key: 'status', label: 'Status' },
-];
+const PDF_COLS = ['Unidade', 'Tipo', 'CNPJ', 'CEP', 'Endereço', 'Cidade', 'UF', 'Responsável', 'Status'];
 
 export default function UnidadesPage() {
   const [unidades, setUnidades] = useState<Unidade[]>(mockUnidades);
@@ -199,10 +189,15 @@ export default function UnidadesPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <ExportButtons
-            data={filtered as unknown as Record<string, unknown>[]}
-            columns={EXPORT_COLS}
+            data={filtered.map((u) => ({
+              Unidade: u.nome, Tipo: u.tipo, CNPJ: u.cnpj, CEP: u.cep,
+              Endereço: u.rua, Cidade: u.cidade, UF: u.estado,
+              Responsável: u.responsavel, Status: u.status,
+            }))}
             filename="unidades"
-            title="Unidades do Grupo"
+            pdfTitle="Unidades do Grupo"
+            columns={PDF_COLS}
+            rows={filtered.map((u) => [u.nome, u.tipo, u.cnpj, u.cep, u.rua, u.cidade, u.estado, u.responsavel, u.status])}
           />
           <button
             onClick={openNew}
