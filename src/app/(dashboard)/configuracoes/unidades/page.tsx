@@ -1,131 +1,203 @@
 'use client';
 
 import { useState } from 'react';
-import { Building2, Plus, Pencil, Trash2, Search, X, Check } from 'lucide-react';
+import { Building2, Plus, Search, Edit2, Trash2, X, Check, MapPin, User } from 'lucide-react';
 import { ExportButtons } from '@/components/ui/ExportButtons';
 
-interface Unidade {
+export interface Unidade {
   id: string;
-  codigo: string;
   nome: string;
+  tipo: 'matriz' | 'filial';
   cnpj: string;
+  cep: string;
+  rua: string;
   cidade: string;
   estado: string;
   responsavel: string;
-  ativa: boolean;
+  status: 'ativa' | 'inativa';
 }
 
-const MOCK: Unidade[] = [
-  { id: '1', codigo: 'MTZ', nome: 'Matriz São Paulo', cnpj: '00.000.000/0001-00', cidade: 'São Paulo', estado: 'SP', responsavel: 'Carlos Lima', ativa: true },
-  { id: '2', codigo: 'FIL-RJ', nome: 'Filial Rio de Janeiro', cnpj: '00.000.000/0002-81', cidade: 'Rio de Janeiro', estado: 'RJ', responsavel: 'Ana Costa', ativa: true },
-  { id: '3', codigo: 'FIL-MG', nome: 'Filial Belo Horizonte', cnpj: '00.000.000/0003-62', cidade: 'Belo Horizonte', estado: 'MG', responsavel: 'Pedro Souza', ativa: true },
-  { id: '4', codigo: 'FIL-RS', nome: 'Filial Porto Alegre', cnpj: '00.000.000/0004-43', cidade: 'Porto Alegre', estado: 'RS', responsavel: 'Maria Silva', ativa: false },
+const mockUnidades: Unidade[] = [
+  {
+    id: '1', nome: 'Matriz São Paulo', tipo: 'matriz',
+    cnpj: '12.345.678/0001-00', cep: '01310-100',
+    rua: 'Av. Paulista, 1000', cidade: 'São Paulo', estado: 'SP',
+    responsavel: 'Carlos Mendes', status: 'ativa',
+  },
+  {
+    id: '2', nome: 'Filial Rio de Janeiro', tipo: 'filial',
+    cnpj: '12.345.678/0002-81', cep: '20040-020',
+    rua: 'Av. Rio Branco, 500', cidade: 'Rio de Janeiro', estado: 'RJ',
+    responsavel: 'Ana Lima', status: 'ativa',
+  },
+  {
+    id: '3', nome: 'Filial Belo Horizonte', tipo: 'filial',
+    cnpj: '12.345.678/0003-62', cep: '30140-110',
+    rua: 'Av. Afonso Pena, 200', cidade: 'Belo Horizonte', estado: 'MG',
+    responsavel: 'Pedro Alves', status: 'ativa',
+  },
+  {
+    id: '4', nome: 'Filial Brasília', tipo: 'filial',
+    cnpj: '12.345.678/0004-43', cep: '70040-010',
+    rua: 'SCS Quadra 01, Bloco A', cidade: 'Brasília', estado: 'DF',
+    responsavel: 'Mariana Costa', status: 'inativa',
+  },
 ];
 
-const EXPORT_COLS = [
-  { key: 'codigo', label: 'Código' },
-  { key: 'nome', label: 'Nome da Unidade' },
-  { key: 'cnpj', label: 'CNPJ' },
-  { key: 'cidade', label: 'Cidade' },
-  { key: 'estado', label: 'Estado' },
-  { key: 'responsavel', label: 'Responsável' },
-  { key: 'ativa', label: 'Status', format: (v: unknown) => v ? 'Ativa' : 'Inativa' },
-];
-
-const ESTADOS = [
-  'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
-  'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
-];
-
-interface FormData {
-  codigo: string;
-  nome: string;
-  cnpj: string;
-  cidade: string;
-  estado: string;
-  responsavel: string;
-  ativa: boolean;
-}
-
-const EMPTY_FORM: FormData = {
-  codigo: '', nome: '', cnpj: '', cidade: '', estado: 'SP', responsavel: '', ativa: true,
+const emptyForm: Omit<Unidade, 'id'> = {
+  nome: '', tipo: 'filial', cnpj: '', cep: '',
+  rua: '', cidade: '', estado: '', responsavel: '', status: 'ativa',
 };
 
-export default function UnidadesPage() {
-  const [items, setItems] = useState<Unidade[]>(MOCK);
-  const [search, setSearch] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState<Unidade | null>(null);
-  const [form, setForm] = useState<FormData>(EMPTY_FORM);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+function StatusBadge({ status }: { status: string }) {
+  const isAtiva = status === 'ativa';
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 10px', borderRadius: 12,
+      fontSize: 11, fontWeight: 600,
+      background: isAtiva ? 'rgba(16,185,129,0.12)' : 'rgba(107,114,128,0.12)',
+      color: isAtiva ? '#10b981' : '#9ca3af',
+      border: `1px solid ${isAtiva ? 'rgba(16,185,129,0.3)' : 'rgba(107,114,128,0.3)'}`,
+    }}>
+      {isAtiva ? 'Ativa' : 'Inativa'}
+    </span>
+  );
+}
 
-  const filtered = items.filter((u) =>
+function TipoBadge({ tipo }: { tipo: 'matriz' | 'filial' }) {
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 10px', borderRadius: 12,
+      fontSize: 11, fontWeight: 700,
+      background: tipo === 'matriz' ? 'rgba(124,58,237,0.12)' : 'rgba(37,99,235,0.1)',
+      color: tipo === 'matriz' ? '#a78bfa' : '#60a5fa',
+      border: `1px solid ${tipo === 'matriz' ? 'rgba(124,58,237,0.3)' : 'rgba(37,99,235,0.25)'}`,
+    }}>
+      {tipo === 'matriz' ? 'MATRIZ' : 'FILIAL'}
+    </span>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <label style={{
+        display: 'block', fontSize: 10.5, fontWeight: 700,
+        letterSpacing: '0.8px', textTransform: 'uppercase',
+        color: 'var(--text-muted)', marginBottom: 5,
+      }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '9px 13px',
+  background: 'var(--bg)',
+  border: '1.5px solid var(--border)',
+  borderRadius: 8, fontSize: 13,
+  color: 'var(--text-primary)',
+  outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+};
+
+const EXPORT_COLS = [
+  { key: 'nome', label: 'Unidade' },
+  { key: 'tipo', label: 'Tipo' },
+  { key: 'cnpj', label: 'CNPJ' },
+  { key: 'cep', label: 'CEP' },
+  { key: 'rua', label: 'Endereço' },
+  { key: 'cidade', label: 'Cidade' },
+  { key: 'estado', label: 'UF' },
+  { key: 'responsavel', label: 'Responsável' },
+  { key: 'status', label: 'Status' },
+];
+
+export default function UnidadesPage() {
+  const [unidades, setUnidades] = useState<Unidade[]>(mockUnidades);
+  const [search, setSearch] = useState('');
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<Unidade | null>(null);
+  const [form, setForm] = useState<Omit<Unidade, 'id'>>(emptyForm);
+
+  const filtered = unidades.filter((u) =>
     u.nome.toLowerCase().includes(search.toLowerCase()) ||
-    u.codigo.toLowerCase().includes(search.toLowerCase()) ||
-    u.cidade.toLowerCase().includes(search.toLowerCase())
+    u.cidade.toLowerCase().includes(search.toLowerCase()) ||
+    u.cnpj.includes(search)
   );
 
-  const openNew = () => {
-    setEditing(null);
-    setForm(EMPTY_FORM);
-    setModalOpen(true);
-  };
-
+  const openNew = () => { setEditing(null); setForm(emptyForm); setModal(true); };
   const openEdit = (u: Unidade) => {
     setEditing(u);
-    setForm({ codigo: u.codigo, nome: u.nome, cnpj: u.cnpj, cidade: u.cidade, estado: u.estado, responsavel: u.responsavel, ativa: u.ativa });
-    setModalOpen(true);
+    setForm({ nome: u.nome, tipo: u.tipo, cnpj: u.cnpj, cep: u.cep, rua: u.rua, cidade: u.cidade, estado: u.estado, responsavel: u.responsavel, status: u.status });
+    setModal(true);
   };
 
-  const save = () => {
-    if (!form.codigo.trim() || !form.nome.trim()) return;
+  const handleSave = () => {
+    if (!form.nome.trim()) return;
     if (editing) {
-      setItems((prev) => prev.map((u) => u.id === editing.id ? { ...u, ...form } : u));
+      setUnidades((p) => p.map((u) => u.id === editing.id ? { ...u, ...form } : u));
     } else {
-      setItems((prev) => [...prev, { ...form, id: String(Date.now()) }]);
+      setUnidades((p) => [...p, { id: Date.now().toString(), ...form }]);
     }
-    setModalOpen(false);
+    setModal(false);
   };
 
-  const confirmDelete = (id: string) => setDeleteId(id);
-  const doDelete = () => {
-    if (deleteId) setItems((prev) => prev.filter((u) => u.id !== deleteId));
-    setDeleteId(null);
+  const handleDelete = (id: string) => {
+    if (confirm('Deseja remover esta unidade?')) {
+      setUnidades((p) => p.filter((u) => u.id !== id));
+    }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '8px 12px',
-    borderRadius: 8,
-    border: '1px solid var(--border)',
-    background: 'var(--bg)',
-    color: 'var(--text-primary)',
-    fontSize: 13,
-    outline: 'none',
+  const stats = {
+    total: unidades.length,
+    ativas: unidades.filter((u) => u.status === 'ativa').length,
+    filiais: unidades.filter((u) => u.tipo === 'filial').length,
   };
 
   return (
     <div>
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div style={{
-            width: 40, height: 40, borderRadius: 10,
-            background: 'rgba(37,99,235,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+      {/* Cabeçalho */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+          Unidades do Grupo
+        </h1>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+          Gerencie a Matriz e as Filiais do grupo empresarial
+        </p>
+      </div>
+
+      {/* KPI cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'Total de Unidades', value: stats.total, color: '#2563eb' },
+          { label: 'Unidades Ativas',   value: stats.ativas,  color: '#10b981' },
+          { label: 'Filiais',           value: stats.filiais, color: '#38bdf8' },
+        ].map((c) => (
+          <div key={c.label} style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 12, padding: '16px 18px', position: 'relative', overflow: 'hidden',
           }}>
-            <Building2 size={20} color="#2563eb" />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: c.color, borderRadius: '12px 12px 0 0' }} />
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>{c.label}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: c.color }}>{c.value}</div>
           </div>
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-              Unidades do Grupo
-            </h1>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
-              {items.filter(u => u.ativa).length} unidades ativas · {items.filter(u => !u.ativa).length} inativas
-            </p>
-          </div>
+        ))}
+      </div>
+
+      {/* Barra de ações */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
+        <div style={{ position: 'relative', flex: 1, maxWidth: 320 }}>
+          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <input
+            style={{ ...inputStyle, paddingLeft: 36 }}
+            placeholder="Buscar por nome, cidade ou CNPJ..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <ExportButtons
             data={filtered as unknown as Record<string, unknown>[]}
             columns={EXPORT_COLS}
@@ -135,59 +207,29 @@ export default function UnidadesPage() {
           <button
             onClick={openNew}
             style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 8,
-              background: '#2563eb', color: '#fff',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              border: 'none',
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: '9px 18px', borderRadius: 8, border: 'none',
+              background: 'linear-gradient(110deg,#1a4fa0,#0ea87a)',
+              color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
-            <Plus size={14} />
-            Nova Unidade
+            <Plus size={14} /> Nova Unidade
           </button>
         </div>
       </div>
 
-      {/* Search */}
-      <div style={{
-        padding: '12px 16px',
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: 12,
-        marginBottom: 16,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-      }}>
-        <Search size={15} color="var(--text-muted)" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por nome, código ou cidade..."
-          style={{
-            flex: 1, border: 'none', background: 'transparent',
-            fontSize: 13, color: 'var(--text-primary)', outline: 'none',
-          }}
-        />
-        {search && (
-          <button onClick={() => setSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
-            <X size={14} />
-          </button>
-        )}
-      </div>
-
-      {/* Table */}
-      <div style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: 12,
-        overflow: 'hidden',
-      }}>
+      {/* Tabela */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface-hover)' }}>
-              {['Código', 'Unidade', 'CNPJ', 'Cidade/UF', 'Responsável', 'Status', 'Ações'].map((h) => (
-                <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+            <tr>
+              {['Unidade', 'Tipo', 'CNPJ', 'Localização', 'Responsável', 'Status', ''].map((h) => (
+                <th key={h} style={{
+                  padding: '12px 16px', textAlign: 'left',
+                  fontSize: 10.5, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase',
+                  color: 'var(--text-muted)', borderBottom: '1px solid var(--border)',
+                  background: 'var(--surface-hover)',
+                }}>
                   {h}
                 </th>
               ))}
@@ -196,53 +238,59 @@ export default function UnidadesPage() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+                <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
                   Nenhuma unidade encontrada
                 </td>
               </tr>
             ) : filtered.map((u, i) => (
               <tr
                 key={u.id}
-                style={{
-                  borderBottom: i < filtered.length - 1 ? '1px solid var(--border-muted)' : 'none',
-                  transition: 'background 0.1s',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--surface-hover)'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                style={{ background: i % 2 !== 0 ? 'var(--surface-hover)' : 'transparent', transition: 'background 0.1s' }}
+                onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.background = 'var(--surface-hover)'}
+                onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.background = i % 2 !== 0 ? 'var(--surface-hover)' : 'transparent'}
               >
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#2563eb', background: 'rgba(37,99,235,0.08)', padding: '2px 7px', borderRadius: 5 }}>
-                    {u.codigo}
-                  </span>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                      background: u.tipo === 'matriz' ? 'rgba(124,58,237,0.12)' : 'rgba(37,99,235,0.1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <Building2 size={15} color={u.tipo === 'matriz' ? '#a78bfa' : '#60a5fa'} />
+                    </div>
+                    <strong style={{ color: 'var(--text-primary)' }}>{u.nome}</strong>
+                  </div>
                 </td>
-                <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{u.nome}</td>
-                <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: 12 }}>{u.cnpj}</td>
-                <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{u.cidade} / {u.estado}</td>
-                <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{u.responsavel}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 5,
-                    padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-                    background: u.ativa ? 'rgba(16,185,129,0.1)' : 'rgba(107,114,128,0.1)',
-                    color: u.ativa ? '#10b981' : '#6b7280',
-                  }}>
-                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />
-                    {u.ativa ? 'Ativa' : 'Inativa'}
-                  </span>
+                <td style={{ padding: '14px 16px' }}><TipoBadge tipo={u.tipo} /></td>
+                <td style={{ padding: '14px 16px', fontFamily: 'monospace', fontSize: 12, color: '#60a5fa' }}>{u.cnpj}</td>
+                <td style={{ padding: '14px 16px', fontSize: 12, color: 'var(--text-secondary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <MapPin size={11} /> {u.cidade}/{u.estado}
+                  </div>
                 </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                <td style={{ padding: '14px 16px', fontSize: 12, color: 'var(--text-secondary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <User size={11} /> {u.responsavel}
+                  </div>
+                </td>
+                <td style={{ padding: '14px 16px' }}><StatusBadge status={u.status} /></td>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
                     <button
                       onClick={() => openEdit(u)}
-                      style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 6, borderRadius: 6, display: 'flex' }}
+                      onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = '#2563eb'}
+                      onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'}
                     >
-                      <Pencil size={11} /> Editar
+                      <Edit2 size={13} />
                     </button>
                     <button
-                      onClick={() => confirmDelete(u.id)}
-                      style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid transparent', background: 'rgba(239,68,68,0.08)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 12 }}
+                      onClick={() => handleDelete(u.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 6, borderRadius: 6, display: 'flex' }}
+                      onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = '#ef4444'}
+                      onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'}
                     >
-                      <Trash2 size={11} /> Remover
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </td>
@@ -252,115 +300,79 @@ export default function UnidadesPage() {
         </table>
       </div>
 
-      {/* Modal Nova/Editar */}
-      {modalOpen && (
+      {/* Modal */}
+      {modal && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-          onClick={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}
+          style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setModal(false); }}
         >
           <div style={{
-            width: 560, background: 'var(--surface)', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-            border: '1px solid var(--border)', overflow: 'hidden',
+            background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)',
+            width: '100%', maxWidth: 580, padding: '28px 32px',
+            maxHeight: '90vh', overflowY: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
           }}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {editing ? 'Editar Unidade' : 'Nova Unidade'}
-              </h2>
-              <button onClick={() => setModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
+              </h3>
+              <button onClick={() => setModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
                 <X size={18} />
               </button>
             </div>
 
-            <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Código *</label>
-                  <input value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value.toUpperCase() })} placeholder="MTZ" style={inputStyle} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Nome da Unidade *</label>
-                  <input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Matriz São Paulo" style={inputStyle} />
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <Field label="Nome da Unidade *">
+                  <input style={inputStyle} value={form.nome} onChange={(e) => setForm((p) => ({ ...p, nome: e.target.value }))} placeholder="Ex: Filial Rio de Janeiro" />
+                </Field>
               </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>CNPJ</label>
-                <input value={form.cnpj} onChange={(e) => setForm({ ...form, cnpj: e.target.value })} placeholder="00.000.000/0001-00" style={inputStyle} />
+              <Field label="Tipo *">
+                <select style={inputStyle} value={form.tipo} onChange={(e) => setForm((p) => ({ ...p, tipo: e.target.value as 'matriz' | 'filial' }))}>
+                  <option value="matriz">Matriz</option>
+                  <option value="filial">Filial</option>
+                </select>
+              </Field>
+              <Field label="CNPJ">
+                <input style={inputStyle} value={form.cnpj} onChange={(e) => setForm((p) => ({ ...p, cnpj: e.target.value }))} placeholder="00.000.000/0000-00" />
+              </Field>
+              <Field label="CEP">
+                <input style={inputStyle} value={form.cep} onChange={(e) => setForm((p) => ({ ...p, cep: e.target.value }))} placeholder="00000-000" />
+              </Field>
+              <Field label="Status">
+                <select style={inputStyle} value={form.status} onChange={(e) => setForm((p => ({ ...p, status: e.target.value as 'ativa' | 'inativa' })))}>
+                  <option value="ativa">Ativa</option>
+                  <option value="inativa">Inativa</option>
+                </select>
+              </Field>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <Field label="Rua / Logradouro">
+                  <input style={inputStyle} value={form.rua} onChange={(e) => setForm((p) => ({ ...p, rua: e.target.value }))} placeholder="Av. Paulista, 1000" />
+                </Field>
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cidade</label>
-                  <input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} placeholder="São Paulo" style={inputStyle} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estado</label>
-                  <select value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })} style={inputStyle}>
-                    {ESTADOS.map((e) => <option key={e} value={e}>{e}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Responsável</label>
-                <input value={form.responsavel} onChange={(e) => setForm({ ...form, responsavel: e.target.value })} placeholder="Nome do responsável" style={inputStyle} />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <button
-                  onClick={() => setForm({ ...form, ativa: !form.ativa })}
-                  style={{
-                    width: 40, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-                    background: form.ativa ? '#10b981' : 'var(--border)',
-                    transition: 'background 0.2s',
-                    position: 'relative',
-                  }}
-                >
-                  <span style={{
-                    position: 'absolute', top: 3, left: form.ativa ? 21 : 3, width: 16, height: 16,
-                    borderRadius: '50%', background: '#fff',
-                    transition: 'left 0.2s',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  }} />
-                </button>
-                <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Unidade {form.ativa ? 'ativa' : 'inativa'}</span>
+              <Field label="Cidade">
+                <input style={inputStyle} value={form.cidade} onChange={(e) => setForm((p) => ({ ...p, cidade: e.target.value }))} placeholder="São Paulo" />
+              </Field>
+              <Field label="Estado (UF)">
+                <input style={inputStyle} value={form.estado} onChange={(e) => setForm((p) => ({ ...p, estado: e.target.value.toUpperCase() }))} placeholder="SP" maxLength={2} />
+              </Field>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <Field label="Responsável Local">
+                  <input style={inputStyle} value={form.responsavel} onChange={(e) => setForm((p) => ({ ...p, responsavel: e.target.value }))} placeholder="Nome do responsável" />
+                </Field>
               </div>
             </div>
 
-            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button onClick={() => setModalOpen(false)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
+              <button onClick={() => setModal(false)} style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Cancelar
               </button>
               <button
-                onClick={save}
-                disabled={!form.codigo.trim() || !form.nome.trim()}
-                style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: '#2563eb', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, opacity: (!form.codigo.trim() || !form.nome.trim()) ? 0.5 : 1 }}
+                onClick={handleSave}
+                disabled={!form.nome.trim()}
+                style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: 'linear-gradient(110deg,#1a4fa0,#0ea87a)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', opacity: !form.nome.trim() ? 0.5 : 1 }}
               >
-                <Check size={13} />
-                {editing ? 'Salvar Alterações' : 'Criar Unidade'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirm Delete */}
-      {deleteId && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ width: 400, background: 'var(--surface)', borderRadius: 16, padding: 28, border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-              <Trash2 size={22} color="#ef4444" />
-            </div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Remover Unidade?</h3>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 24 }}>
-              Esta ação não pode ser desfeita. A unidade será removida permanentemente.
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setDeleteId(null)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                Cancelar
-              </button>
-              <button onClick={doDelete} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#ef4444', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                Remover
+                <Check size={14} /> Salvar
               </button>
             </div>
           </div>
