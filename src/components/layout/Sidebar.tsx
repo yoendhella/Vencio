@@ -7,7 +7,7 @@ import {
   Bell, TrendingUp, BarChart3, Users, History,
   Shield, FileBarChart, Settings, ChevronLeft, ChevronRight,
 } from 'lucide-react';
-import { VencioLogo, VencioAppIcon } from '@/components/ui/VencioLogo';
+import { VencioLogo, VencioIcon } from '@/components/ui/VencioLogo';
 import { useEffect, useState } from 'react';
 
 interface NavItem {
@@ -90,30 +90,40 @@ export function Sidebar() {
       className="flex-shrink-0 flex flex-col h-screen transition-all duration-300 ease-in-out"
       style={{
         width: collapsed ? 64 : 240,
-        background: 'linear-gradient(180deg, #0c1628 0%, #0d1b3e 60%, #0c1628 100%)',
-        boxShadow: '4px 0 24px rgba(13,27,62,0.2)',
+        background: 'var(--surface)',
+        borderRight: '1px solid var(--border)',
+        boxShadow: '4px 0 16px rgba(13,27,62,0.07)',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 h-16 flex-shrink-0 border-b border-white/10">
+      <div
+        className="flex items-center justify-between px-4 h-16 flex-shrink-0"
+        style={{ borderBottom: '1px solid var(--border)' }}
+      >
         {collapsed
-          ? <VencioAppIcon size={38} />
-          : <VencioLogo variant="white" size={28} />
+          ? <VencioIcon variant="default" size={30} />
+          : <VencioLogo variant="dark" size={26} />
         }
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-7 h-7 rounded-md text-white/40 hover:text-white hover:bg-white/10 transition-all duration-150 cursor-pointer ml-auto flex-shrink-0"
+          className="flex items-center justify-center w-7 h-7 rounded-md transition-all duration-150 cursor-pointer ml-auto flex-shrink-0"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden">
+      <nav className="flex-1 py-3 overflow-y-auto overflow-x-hidden" style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}>
         {groups.map((group) => (
-          <div key={group.title} className="mb-4">
+          <div key={group.title} className="mb-3">
             {!collapsed && (
-              <p className="px-5 mb-1 text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <p
+                className="px-5 mb-1 text-[9px] font-bold uppercase tracking-[1.8px]"
+                style={{ color: 'var(--text-muted)' }}
+              >
                 {group.title}
               </p>
             )}
@@ -124,29 +134,44 @@ export function Sidebar() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className={`flex items-center gap-3 mx-2 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer ${
+                      className={`flex items-center gap-2.5 mx-2 rounded-lg text-[13px] font-medium transition-all duration-150 cursor-pointer relative ${
                         collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2'
-                      } ${
-                        active
-                          ? 'bg-white/[0.12] text-white'
-                          : 'text-white/60 hover:bg-white/[0.07] hover:text-white'
                       }`}
-                      style={active && !collapsed ? { borderLeft: '3px solid #00C97A', paddingLeft: 'calc(0.75rem - 3px)' } : undefined}
+                      style={{
+                        background: active
+                          ? 'rgba(37,99,235,0.10)'
+                          : 'transparent',
+                        color: active
+                          ? '#2563eb'
+                          : 'var(--text-secondary)',
+                        fontWeight: active ? 600 : 500,
+                        borderLeft: active && !collapsed ? '3px solid #10b981' : undefined,
+                        paddingLeft: active && !collapsed ? 'calc(0.75rem - 3px)' : undefined,
+                      }}
+                      onMouseEnter={e => {
+                        if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--surface-2)';
+                      }}
+                      onMouseLeave={e => {
+                        if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                      }}
                     >
                       <Icon
-                        size={18}
+                        size={16}
                         className="flex-shrink-0"
-                        style={{ color: active ? '#00C97A' : undefined }}
+                        style={{ color: active ? '#10b981' : 'var(--text-muted)', opacity: active ? 1 : 0.8 }}
                       />
                       {!collapsed && (
                         <>
                           <span className="flex-1 truncate">{label}</span>
                           {badge !== undefined && (
-                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold">
+                            <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[9.5px] font-bold">
                               {badge}
                             </span>
                           )}
                         </>
+                      )}
+                      {collapsed && badge !== undefined && (
+                        <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
                       )}
                     </Link>
                   </li>
@@ -175,16 +200,16 @@ function SidebarFooter({ collapsed }: { collapsed: boolean }) {
 
   const mes = new Date().toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
 
-  if (collapsed) return <div className="h-12 border-t border-white/10" />;
+  if (collapsed) return <div className="h-12" style={{ borderTop: '1px solid var(--border)' }} />;
 
   return (
-    <div className="px-5 py-3 border-t border-white/10">
-      <p className="text-[11px] text-white/40">
+    <div className="px-5 py-3" style={{ borderTop: '1px solid var(--border)' }}>
+      <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
         {kpis ? (
           <>
-            <span className="text-[#00C97A] font-semibold">{kpis.ativos ?? 0} ativos</span>
+            <span className="font-semibold" style={{ color: '#10b981' }}>{kpis.ativos ?? 0} ativos</span>
             {' · '}
-            <span className="text-red-400 font-semibold">{kpis.criticos ?? 0} críticos</span>
+            <span className="font-semibold" style={{ color: '#ef4444' }}>{kpis.criticos ?? 0} críticos</span>
             {' · '}
             {mes}
           </>
