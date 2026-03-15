@@ -4,12 +4,21 @@ import { NextResponse } from 'next/server';
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next')) return NextResponse.next();
+
+  if (
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/vencio_logo_pack') ||
+    pathname.startsWith('/brand') ||
+    pathname === '/favicon.ico'
+  ) return NextResponse.next();
+
   if (!isLoggedIn && pathname !== '/login') return NextResponse.redirect(new URL('/login', req.url));
   if (isLoggedIn && pathname === '/login') return NextResponse.redirect(new URL('/', req.url));
+
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|otf)).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|vencio_logo_pack|brand).*)'],
 };
