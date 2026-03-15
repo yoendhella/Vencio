@@ -64,7 +64,7 @@ export default function LoginPage() {
 
           {/* Card */}
           <div style={{
-            background: 'rgba(255,255,255,0.82)',
+            background: 'rgba(255,255,255,0.92)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
             border: '1px solid rgba(255,255,255,0.90)',
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 src="/vencio_logo_pack/Logo.menu1.png"
                 alt="Logo Vencio"
                 className="login-logo"
-                style={{ width: '180px', height: '60px', objectFit: 'contain' }}
+                style={{ width: '220px', height: 'auto', objectFit: 'contain' }}
               />
             </div>
 
@@ -249,7 +249,7 @@ export default function LoginPage() {
               <img
                 src="/vencio_logo_pack/Logo.menu2.png"
                 alt="Logo Vencio"
-                style={{ width: '120px', height: '40px', objectFit: 'contain' }}
+                style={{ width: '280px', height: 'auto', objectFit: 'contain' }}
               />
               <p style={{
                 fontSize: '11px', color: '#8FA3BE',
