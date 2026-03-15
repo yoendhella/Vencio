@@ -77,13 +77,12 @@ export default function LoginPage() {
           }}>
 
             {/* LOGO TOPO */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.75rem', background: 'transparent' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/vencio_logo_pack/Logo.menu1.png"
                 alt="Logo Vencio"
-                className="login-logo"
-                style={{ width: '220px', height: 'auto', objectFit: 'contain' }}
+                style={{ width: '220px', height: 'auto', objectFit: 'contain', background: 'transparent', mixBlendMode: 'multiply' }}
               />
             </div>
 
@@ -239,23 +238,14 @@ export default function LoginPage() {
             </form>
 
             {/* LOGO RODAPÉ */}
-            <div style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', gap: '10px',
-              marginTop: '1.75rem', paddingTop: '1.5rem',
-              borderTop: '1px solid rgba(209,220,240,0.50)',
-            }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginTop: '1.75rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(209,220,240,0.50)', background: 'transparent' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/vencio_logo_pack/Logo.menu2.png"
                 alt="Logo Vencio"
-                style={{ width: '280px', height: 'auto', objectFit: 'contain' }}
+                style={{ width: '280px', height: 'auto', objectFit: 'contain', background: 'transparent', mixBlendMode: 'multiply' }}
               />
-              <p style={{
-                fontSize: '11px', color: '#8FA3BE',
-                fontWeight: 500, letterSpacing: '0.03em',
-                fontFamily: 'inherit',
-              }}>
+              <p style={{ fontSize: '11px', color: '#8FA3BE', fontWeight: 500, letterSpacing: '0.03em', fontFamily: 'inherit' }}>
                 © {new Date().getFullYear()} Vencio — Todos os direitos reservados
               </p>
             </div>
