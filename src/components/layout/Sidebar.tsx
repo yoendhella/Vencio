@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LayoutDashboard, FileText, FilePlus, DollarSign, FolderOpen,
   Bell, TrendingUp, BarChart3, Users, History,
@@ -44,8 +44,16 @@ function useAlertCount() {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const alertCount = useAlertCount();
   const [collapsed, setCollapsed] = useState(false);
+
+  function checkActive(href: string): boolean {
+    if (href.includes('?')) {
+      return `${pathname}?${searchParams.toString()}` === href;
+    }
+    return pathname === href || (href !== '/' && pathname.startsWith(href + '/'));
+  }
 
   const groups: NavGroup[] = [
     {
@@ -141,8 +149,7 @@ export function Sidebar() {
             )}
             <ul className="flex flex-col" style={{ gap: 1 }}>
               {group.items.map(({ label, href, icon: Icon, badge }) => {
-                const hrefPath = href.split('?')[0];
-                const active = pathname === hrefPath || (hrefPath !== '/' && pathname.startsWith(hrefPath));
+                const active = checkActive(href);
                 return (
                   <li key={href}>
                     <Link

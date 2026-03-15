@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { FilterBar } from '@/components/layout/FilterBar';
 import { ExportButtons } from '@/components/ui/ExportButtons';
+import { Plus, X, Check } from 'lucide-react';
 
 interface Fornecedor {
   id: string; razaoSocial: string; cnpj: string; categoria: string;
@@ -21,9 +22,16 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+const EMPTY_FORM = { razaoSocial: '', nomeFantasia: '', cnpj: '', categoria: '', contatoNome: '', contatoEmail: '', contatoTel: '', unidade: '', status: 'ativo' };
+
+const inp: React.CSSProperties = { width: '100%', padding: '9px 13px', background: 'var(--bg)', border: '1.5px solid var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--text-primary)', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', marginBottom: 12 };
+const lbl: React.CSSProperties = { display: 'block', fontSize: 10.5, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 5 };
+
 export function FornecedorTable() {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [search, setSearch] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -34,6 +42,12 @@ export function FornecedorTable() {
   return (
     <>
       <FilterBar search={search} onSearch={setSearch}>
+        <button
+          onClick={() => { setForm(EMPTY_FORM); setModalAberto(true); }}
+          style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 8, border: 'none', background: 'linear-gradient(110deg,#1a4fa0,#0ea87a)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+        >
+          <Plus size={14} /> Novo Fornecedor
+        </button>
         <ExportButtons
           data={fornecedores.map((f) => ({
             'Razão Social': f.razaoSocial,
@@ -94,6 +108,83 @@ export function FornecedorTable() {
           );
         })}
       </div>
+
+      {/* Modal Novo Fornecedor */}
+      {modalAberto && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setModalAberto(false); }}
+        >
+          <div style={{ background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)', width: '100%', maxWidth: 560, padding: '28px 32px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>Novo Fornecedor</h3>
+              <button onClick={() => setModalAberto(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}><X size={18} /></button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={lbl}>Razão Social *</label>
+                <input value={form.razaoSocial} onChange={(e) => setForm((p) => ({ ...p, razaoSocial: e.target.value }))} style={inp} placeholder="Razão social do fornecedor" />
+              </div>
+              <div>
+                <label style={lbl}>Nome Fantasia</label>
+                <input value={form.nomeFantasia} onChange={(e) => setForm((p) => ({ ...p, nomeFantasia: e.target.value }))} style={inp} placeholder="Nome fantasia" />
+              </div>
+              <div>
+                <label style={lbl}>CNPJ *</label>
+                <input value={form.cnpj} onChange={(e) => setForm((p) => ({ ...p, cnpj: e.target.value }))} style={inp} placeholder="00.000.000/0000-00" />
+              </div>
+              <div>
+                <label style={lbl}>Categoria</label>
+                <input value={form.categoria} onChange={(e) => setForm((p) => ({ ...p, categoria: e.target.value }))} style={inp} placeholder="Ex: Limpeza, TI, Segurança" />
+              </div>
+              <div>
+                <label style={lbl}>Nome do Contato</label>
+                <input value={form.contatoNome} onChange={(e) => setForm((p) => ({ ...p, contatoNome: e.target.value }))} style={inp} placeholder="Nome do responsável" />
+              </div>
+              <div>
+                <label style={lbl}>E-mail</label>
+                <input type="email" value={form.contatoEmail} onChange={(e) => setForm((p) => ({ ...p, contatoEmail: e.target.value }))} style={inp} placeholder="email@fornecedor.com" />
+              </div>
+              <div>
+                <label style={lbl}>Telefone</label>
+                <input value={form.contatoTel} onChange={(e) => setForm((p) => ({ ...p, contatoTel: e.target.value }))} style={inp} placeholder="(00) 00000-0000" />
+              </div>
+              <div>
+                <label style={lbl}>Unidade Atendida</label>
+                <input value={form.unidade} onChange={(e) => setForm((p) => ({ ...p, unidade: e.target.value }))} style={inp} placeholder="Ex: Matriz SP" />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={lbl}>Status</label>
+                <select value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))} style={inp}>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                  <option value="em_analise">Em análise</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8, paddingTop: 18, borderTop: '1px solid var(--border)' }}>
+              <button onClick={() => setModalAberto(false)} style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Cancelar
+              </button>
+              <button
+                disabled={!form.razaoSocial.trim() || !form.cnpj.trim()}
+                onClick={async () => {
+                  await fetch('/api/fornecedores', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ razaoSocial: form.razaoSocial, cnpj: form.cnpj, categoria: form.categoria || 'Geral', nomeResponsavel: form.contatoNome, email: form.contatoEmail, telefone: form.contatoTel }) });
+                  setModalAberto(false);
+                  const params = new URLSearchParams();
+                  if (search) params.set('q', search);
+                  fetch(`/api/fornecedores?${params}`).then((r) => r.json()).then((d) => setFornecedores(d.data ?? []));
+                }}
+                style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: 'linear-gradient(110deg,#1a4fa0,#0ea87a)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', opacity: (!form.razaoSocial.trim() || !form.cnpj.trim()) ? 0.5 : 1 }}
+              >
+                <Check size={14} /> Salvar Fornecedor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
