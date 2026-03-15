@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { SlaBar } from '@/components/ui/SlaBar';
 import { KpiCard } from '@/components/ui/KpiCard';
 import { Button } from '@/components/ui/Button';
+import { ExportButtons } from '@/components/ui/ExportButtons';
 import { OcorrenciaModal } from './OcorrenciaModal';
 
 interface SlaItem {
@@ -39,6 +40,23 @@ export function SlaTable() {
         <KpiCard label="No SLA" value={noSla} color="ok" />
         <KpiCard label="Em atenção" value={atencao} color="warn" />
         <KpiCard label="Em risco" value={emRisco} color="err" />
+      </div>
+
+      <div className="flex justify-end mb-3">
+        <ExportButtons
+          data={items as unknown as Record<string, unknown>[]}
+          columns={[
+            { key: 'numero', label: 'Número' },
+            { key: 'nome', label: 'Contrato' },
+            { key: 'fornecedorNome', label: 'Fornecedor' },
+            { key: 'slaIndicador', label: 'Indicador' },
+            { key: 'slaMeta', label: 'Meta (%)' },
+            { key: 'slaRealizado', label: 'Realizado (%)' },
+            { key: 'slaStatus', label: 'Status' },
+          ]}
+          filename="sla-contratos"
+          title="Relatório SLA / Entregas"
+        />
       </div>
 
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">

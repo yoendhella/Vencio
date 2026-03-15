@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { contratos, fornecedores } from '@/db/schema';
 import { eq, ne } from 'drizzle-orm';
 import { Badge } from '@/components/ui/Badge';
+import { ExportButtons } from '@/components/ui/ExportButtons';
 import { formatDate } from '@/lib/utils';
 
 const situacaoBadge = { encerrado: 'gray', suspenso: 'warn', rescindido: 'err', em_renovacao: 'pri' } as const;
@@ -23,7 +24,31 @@ export default async function HistoricoPage() {
 
   return (
     <div>
-      <PageHeader title="Histórico" description="Contratos encerrados e histórico" />
+      <div className="flex items-start justify-between mb-2">
+        <PageHeader title="Histórico" description="Contratos encerrados e histórico" />
+        <ExportButtons
+          data={lista.map((c) => ({
+            numero: c.numero,
+            nome: c.nome,
+            fornecedorNome: c.fornecedorNome ?? '',
+            categoria: c.categoria,
+            situacao: c.situacao,
+            dataInicio: formatDate(c.dataInicio),
+            dataTermino: formatDate(c.dataTermino),
+          }))}
+          columns={[
+            { key: 'numero', label: 'Número' },
+            { key: 'nome', label: 'Contrato' },
+            { key: 'fornecedorNome', label: 'Fornecedor' },
+            { key: 'categoria', label: 'Categoria' },
+            { key: 'situacao', label: 'Situação' },
+            { key: 'dataInicio', label: 'Início' },
+            { key: 'dataTermino', label: 'Término' },
+          ]}
+          filename="historico-contratos"
+          title="Histórico de Contratos"
+        />
+      </div>
       <div className="space-y-3">
         {lista.length === 0 ? (
           <p className="text-sm text-gray-500 text-center py-8">Nenhum histórico disponível</p>

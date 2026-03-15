@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { FilterBar } from '@/components/layout/FilterBar';
+import { ExportButtons } from '@/components/ui/ExportButtons';
 
 interface Fornecedor {
   id: string; razaoSocial: string; cnpj: string; categoria: string;
@@ -32,7 +33,24 @@ export function FornecedorTable() {
 
   return (
     <>
-      <FilterBar search={search} onSearch={setSearch} />
+      <FilterBar search={search} onSearch={setSearch}>
+        <ExportButtons
+          data={fornecedores as unknown as Record<string, unknown>[]}
+          columns={[
+            { key: 'razaoSocial', label: 'Razão Social' },
+            { key: 'cnpj', label: 'CNPJ' },
+            { key: 'categoria', label: 'Categoria' },
+            { key: 'notaQualidade', label: 'Qualidade' },
+            { key: 'notaPrazo', label: 'Prazo' },
+            { key: 'notaComunicacao', label: 'Comunicação' },
+            { key: 'notaConformidade', label: 'Conformidade' },
+            { key: 'totalOcorrencias', label: 'Ocorrências' },
+            { key: 'ativo', label: 'Status', format: (v) => v ? 'Ativo' : 'Inativo' },
+          ]}
+          filename="fornecedores"
+          title="Relatório de Fornecedores"
+        />
+      </FilterBar>
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {fornecedores.map((f, i) => {
           const initials = f.razaoSocial.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();

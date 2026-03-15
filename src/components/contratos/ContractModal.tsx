@@ -14,7 +14,7 @@ interface Fornecedor { id: string; razaoSocial: string; }
 
 const EMPTY = {
   numero: '', nome: '', objeto: '', tipo: 'prestacao_servico', categoria: '',
-  departamento: '', situacao: 'ativo', fornecedorId: '', valorTotal: '',
+  departamento: '', unidade: '', situacao: 'ativo', fornecedorId: '', valorTotal: '',
   valorMensal: '', formaPagamento: '', indicadorReajuste: 'IPCA',
   dataInicio: '', dataTermino: '', diasAlertaAntecipado: '30',
   maxAditivos: '4', slaIndicador: '', slaMeta: '',
@@ -38,7 +38,7 @@ export function ContractModal({ open, onClose, contratoId, onSuccess }: Contract
           setForm({
             numero: c.numero ?? '', nome: c.nome ?? '', objeto: c.objeto ?? '',
             tipo: c.tipo ?? 'prestacao_servico', categoria: c.categoria ?? '',
-            departamento: c.departamento ?? '', situacao: c.situacao ?? 'ativo',
+            departamento: c.departamento ?? '', unidade: (c as Record<string, unknown>).unidade as string ?? '', situacao: c.situacao ?? 'ativo',
             fornecedorId: c.fornecedorId ?? '', valorTotal: c.valorTotal ?? '',
             valorMensal: c.valorMensal ?? '', formaPagamento: c.formaPagamento ?? '',
             indicadorReajuste: c.indicadorReajuste ?? 'IPCA',
@@ -77,10 +77,11 @@ export function ContractModal({ open, onClose, contratoId, onSuccess }: Contract
     onClose();
   };
 
-  const field = (label: string, key: string, type = 'text') => (
+  const field = (label: string, key: string, type = 'text', placeholder?: string) => (
     <div>
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <input type={type} value={(form as Record<string, string>)[key]} onChange={(e) => set(key, e.target.value)}
+        placeholder={placeholder}
         className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-pri" />
     </div>
   );
@@ -125,6 +126,7 @@ export function ContractModal({ open, onClose, contratoId, onSuccess }: Contract
           {field('Categoria *', 'categoria')}
           {field('Departamento *', 'departamento')}
         </div>
+        {field('Unidade do Grupo', 'unidade', 'text', 'Ex: Matriz SP, Filial RJ...')}
 
         <p className="text-xs font-semibold text-gray-400 uppercase pt-2">Empresa</p>
         <div>

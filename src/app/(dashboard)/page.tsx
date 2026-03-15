@@ -11,6 +11,8 @@ import { formatCurrency, diasRestantes, statusContrato } from '@/lib/utils';
 import { VencimentoChart } from '@/components/dashboard/VencimentoChart';
 import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
 import { CategoryBars } from '@/components/dashboard/CategoryBars';
+import { Suspense } from 'react';
+import { UnidadeFilter } from '@/components/dashboard/UnidadeFilter';
 
 async function getDashboardData() {
   const hoje = new Date();
@@ -58,26 +60,49 @@ async function getDashboardData() {
   };
 }
 
-export default async function DashboardPage() {
+interface PageProps {
+  searchParams: Promise<{ unidade?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
   await auth();
+  const { unidade } = await searchParams;
   const data = await getDashboardData();
 
-  const alertas = data.contratos
+  // Extrair unidades únicas dos contratos (campo não está no schema atual, mas preparamos para expansão)
+  const unidades: string[] = [];
+
+  // Filtrar contratos por unidade se selecionado (expansão futura quando campo estiver no schema)
+  const contratosFiltered = data.contratos;
+
+  const alertas = contratosFiltered
     .filter((c) => statusContrato(diasRestantes(c.dataTermino)) !== 'ok')
     .sort((a, b) => diasRestantes(a.dataTermino) - diasRestantes(b.dataTermino))
     .slice(0, 5);
 
-  const categorias = data.contratos.reduce<Record<string, number>>((acc, c) => {
+  const categorias = contratosFiltered.reduce<Record<string, number>>((acc, c) => {
     acc[c.categoria] = (acc[c.categoria] ?? 0) + Number(c.valorMensal);
     return acc;
   }, {});
 
   return (
     <div>
-      <PageHeader
-        title="Dashboard"
-        description={`Visão geral — ${format(new Date(), "MMMM 'de' yyyy", { locale: ptBR })}`}
-      />
+      <div className="flex items-center justify-between mb-2">
+        <PageHeader
+          title="Dashboard"
+          description={`Visão geral — ${format(new Date(), "MMMM 'de' yyyy", { locale: ptBR })}`}
+        />
+        <Suspense fallback={null}>
+          <UnidadeFilter unidades={unidades} />
+        </Suspense>
+      </div>
+
+      {unidade && (
+        <div className="mb-4 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563eb', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span>Filtrando por:</span>
+          <strong>{unidade}</strong>
+        </div>
+      )}
 
       {/* KPIs Linha 1 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">

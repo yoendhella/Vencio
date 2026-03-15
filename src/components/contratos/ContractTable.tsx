@@ -6,6 +6,7 @@ import { SlaBar } from '@/components/ui/SlaBar';
 import { Button } from '@/components/ui/Button';
 import { FilterBar } from '@/components/layout/FilterBar';
 import { ContractModal } from './ContractModal';
+import { ExportButtons } from '@/components/ui/ExportButtons';
 import { formatCurrency, formatDate, diasRestantes } from '@/lib/utils';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
@@ -68,6 +69,21 @@ export function ContractTable() {
           <option value="encerrado">Encerrado</option>
           <option value="suspenso">Suspenso</option>
         </select>
+        <ExportButtons
+          data={contratos as unknown as Record<string, unknown>[]}
+          columns={[
+            { key: 'numero', label: 'Número' },
+            { key: 'nome', label: 'Contrato' },
+            { key: 'departamento', label: 'Departamento' },
+            { key: 'categoria', label: 'Categoria' },
+            { key: 'valorMensal', label: 'Valor Mensal', format: (v) => formatCurrency(v as string) },
+            { key: 'indicadorReajuste', label: 'Índice' },
+            { key: 'dataTermino', label: 'Vencimento', format: (v) => formatDate(v as string) },
+            { key: 'situacao', label: 'Situação' },
+          ]}
+          filename="contratos"
+          title="Relatório de Contratos"
+        />
         <Button size="sm" onClick={() => { setEditingId(null); setModalOpen(true); }}>
           <Plus className="h-4 w-4" /> Novo contrato
         </Button>

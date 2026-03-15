@@ -5,6 +5,7 @@ import { Table } from '@/components/ui/Table';
 import { KpiCard } from '@/components/ui/KpiCard';
 import { Button } from '@/components/ui/Button';
 import { FilterBar } from '@/components/layout/FilterBar';
+import { ExportButtons } from '@/components/ui/ExportButtons';
 import { formatDate } from '@/lib/utils';
 
 interface Log {
@@ -35,7 +36,20 @@ export default function AuditoriaPage() {
         <KpiCard label="Aprovações" value={aprovacoes} color="ok" />
         <KpiCard label="Acessos negados" value={0} color="err" />
       </div>
-      <FilterBar search={search} onSearch={setSearch} />
+      <FilterBar search={search} onSearch={setSearch}>
+        <ExportButtons
+          data={logs as unknown as Record<string, unknown>[]}
+          columns={[
+            { key: 'criadoEm', label: 'Data/Hora', format: (v) => formatDate(v as string) },
+            { key: 'nomeUsuario', label: 'Usuário' },
+            { key: 'acao', label: 'Ação' },
+            { key: 'entidade', label: 'Entidade' },
+            { key: 'detalhes', label: 'Detalhes' },
+          ]}
+          filename="auditoria"
+          title="Log de Auditoria"
+        />
+      </FilterBar>
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
         <Table>
           <Table.Head>

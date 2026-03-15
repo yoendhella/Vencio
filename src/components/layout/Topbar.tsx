@@ -19,9 +19,11 @@ const PAGE_TITLES: Record<string, string> = {
   '/sla':          'SLA / Entregas',
   '/fornecedores': 'Fornecedores',
   '/historico':    'Histórico',
-  '/auditoria':    'Auditoria & Logs',
-  '/relatorios':   'Relatórios',
-  '/config':       'Configurações',
+  '/auditoria':               'Auditoria & Logs',
+  '/relatorios':              'Relatórios',
+  '/config':                  'Configurações',
+  '/cadastros':               'Cadastros Auxiliares',
+  '/configuracoes/unidades':  'Unidades do Grupo',
 };
 
 export function Topbar({ user }: TopbarProps) {

@@ -6,6 +6,7 @@ import {
   LayoutDashboard, FileText, FilePlus, DollarSign, FolderOpen,
   Bell, TrendingUp, BarChart3, Users, History,
   Shield, FileBarChart, Settings, ChevronLeft, ChevronRight,
+  Tag, Layers, Wallet, UserCheck, Building2,
 } from 'lucide-react';
 import { VencioLogo, VencioIcon } from '@/components/ui/VencioLogo';
 import { useEffect, useState } from 'react';
@@ -73,6 +74,11 @@ export function Sidebar() {
       items: [
         { label: 'Fornecedores', href: '/fornecedores', icon: Users },
         { label: 'Histórico', href: '/historico', icon: History },
+        { label: 'Categorias', href: '/cadastros?tab=categorias', icon: Tag },
+        { label: 'Tipos de Contrato', href: '/cadastros?tab=tipos', icon: Layers },
+        { label: 'Centros de Custo', href: '/cadastros?tab=centros', icon: Wallet },
+        { label: 'Responsáveis', href: '/cadastros?tab=responsaveis', icon: UserCheck },
+        { label: 'Índices de Reajuste', href: '/cadastros?tab=indices', icon: TrendingUp },
       ],
     },
     {
@@ -81,6 +87,7 @@ export function Sidebar() {
         { label: 'Auditoria & Logs', href: '/auditoria', icon: Shield },
         { label: 'Relatórios', href: '/relatorios', icon: FileBarChart },
         { label: 'Configurações', href: '/config', icon: Settings },
+        { label: 'Unidades do Grupo', href: '/configuracoes/unidades', icon: Building2 },
       ],
     },
   ];
@@ -134,7 +141,8 @@ export function Sidebar() {
             )}
             <ul className="flex flex-col" style={{ gap: 1 }}>
               {group.items.map(({ label, href, icon: Icon, badge }) => {
-                const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+                const hrefPath = href.split('?')[0];
+                const active = pathname === hrefPath || (hrefPath !== '/' && pathname.startsWith(hrefPath));
                 return (
                   <li key={href}>
                     <Link
