@@ -64,7 +64,7 @@ export default function LoginPage() {
 
           {/* Card */}
           <div style={{
-            background: 'rgba(255,255,255,0.92)',
+            background: 'rgba(255,255,255,0.97)',
             backdropFilter: 'blur(40px)',
             WebkitBackdropFilter: 'blur(40px)',
             border: '1px solid rgba(255,255,255,0.90)',
