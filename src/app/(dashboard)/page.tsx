@@ -105,7 +105,7 @@ export default async function DashboardPage() {
         <VencimentoChart contratos={data.contratos} />
         <Card>
           <Card.Header>
-            <h3 className="font-semibold text-gray-900 dark:text-white">Top 5 Fornecedores por Valor</h3>
+            <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Top 5 Fornecedores por Valor</h3>
           </Card.Header>
           <Card.Body>
             {data.contratos
@@ -118,9 +118,19 @@ export default async function DashboardPage() {
               .sort((a, b) => b.valor - a.valor)
               .slice(0, 5)
               .map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                  <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-[60%]">{item.nome}</span>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(item.valor)}/mês</span>
+                <div
+                  key={i}
+                  className="flex items-center gap-3 py-2.5 border-b last:border-0"
+                  style={{ borderColor: 'var(--border-muted)' }}
+                >
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+                    style={{ background: 'rgba(37,99,235,0.12)', color: '#2563eb' }}
+                  >
+                    {i + 1}
+                  </div>
+                  <span className="text-sm flex-1 truncate" style={{ color: 'var(--text-primary)' }}>{item.nome}</span>
+                  <span className="text-sm font-bold flex-shrink-0" style={{ color: '#10b981' }}>{formatCurrency(item.valor)}/mês</span>
                 </div>
               ))}
           </Card.Body>

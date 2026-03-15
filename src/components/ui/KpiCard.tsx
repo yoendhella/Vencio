@@ -10,32 +10,31 @@ interface KpiCardProps {
   className?: string;
 }
 
-const colorBars: Record<Color, string> = {
-  pri: 'bg-blue-700',
-  ok: 'bg-green-600',
-  err: 'bg-red-600',
-  warn: 'bg-yellow-600',
-  pur: 'bg-purple-600',
-  info: 'bg-sky-700',
-};
-
-const colorValues: Record<Color, string> = {
-  pri: 'text-blue-700',
-  ok: 'text-green-600',
-  err: 'text-red-600',
-  warn: 'text-yellow-600',
-  pur: 'text-purple-600',
-  info: 'text-sky-700',
+const colorHex: Record<Color, string> = {
+  pri:  '#2563eb',
+  ok:   '#10b981',
+  err:  '#ef4444',
+  warn: '#f59e0b',
+  pur:  '#8b5cf6',
+  info: '#0ea5e9',
 };
 
 export function KpiCard({ label, value, meta, color = 'pri', className }: KpiCardProps) {
+  const hex = colorHex[color];
   return (
-    <div className={cn('bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm overflow-hidden', className)}>
-      <div className={cn('h-1', colorBars[color])} />
+    <div
+      className={cn('rounded-xl border overflow-hidden transition-all duration-150 hover:-translate-y-0.5', className)}
+      style={{
+        background: 'var(--surface)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
+      <div style={{ height: 3, background: hex, borderRadius: '12px 12px 0 0' }} />
       <div className="px-5 py-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-        <p className={cn('text-2xl font-bold', colorValues[color])}>{value}</p>
-        {meta && <p className="text-xs text-gray-400 mt-1">{meta}</p>}
+        <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>{label}</p>
+        <p className="text-2xl font-extrabold leading-none mb-1.5" style={{ color: hex }}>{value}</p>
+        {meta && <p className="text-[11px]" style={{ color: 'var(--text-muted)', opacity: 0.7 }}>{meta}</p>}
       </div>
     </div>
   );

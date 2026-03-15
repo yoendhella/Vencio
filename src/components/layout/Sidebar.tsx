@@ -90,7 +90,7 @@ export function Sidebar() {
       className="flex-shrink-0 flex flex-col h-screen transition-all duration-300 ease-in-out"
       style={{
         width: collapsed ? 64 : 240,
-        background: 'linear-gradient(180deg, #0D1B3E 0%, #132240 100%)',
+        background: 'linear-gradient(180deg, #0c1628 0%, #0d1b3e 60%, #0c1628 100%)',
         boxShadow: '4px 0 24px rgba(13,27,62,0.2)',
       }}
     >
