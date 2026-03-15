@@ -34,8 +34,12 @@ export default function LoginPage() {
   return (
     <>
       <style>{`
-        html, body { margin: 0; padding: 0; background: #0D1B3E !important; }
-        #login-bg {
+        html, body {
+          margin: 0; padding: 0;
+          background: #0D1B3E !important;
+          font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        #vc-page {
           min-height: 100vh;
           width: 100%;
           background-image: url('/vencio_logo_pack/background.jpg');
@@ -45,59 +49,156 @@ export default function LoginPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+          padding: 24px 16px;
+          box-sizing: border-box;
         }
-        .login-logo { display: block; max-width: 100%; height: auto; }
+        .vc-card-wrap {
+          width: 100%;
+          max-width: 420px;
+          position: relative;
+          z-index: 1;
+        }
+        .vc-gradient-bar {
+          height: 3px;
+          background: linear-gradient(90deg, transparent, #1E5FD4, #2EB8E6, #00C97A, transparent);
+          border-radius: 3px 3px 0 0;
+        }
+        .vc-card {
+          background: white;
+          border: 1px solid rgba(209,220,240,0.60);
+          border-top: none;
+          border-radius: 0 0 24px 24px;
+          box-shadow: 0 32px 80px rgba(13,27,62,0.28);
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+        }
+        .vc-logo-wrap {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 1.75rem;
+        }
+        .vc-logo-img {
+          width: 220px;
+          height: auto;
+          object-fit: contain;
+          mix-blend-mode: multiply;
+        }
+        .vc-label {
+          display: block;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.10em;
+          color: #5A6B7D;
+          margin-bottom: 7px;
+        }
+        .vc-input {
+          width: 100%;
+          padding: 12px 15px;
+          background: rgba(240,244,248,0.70);
+          border: 1.5px solid rgba(209,220,240,0.80);
+          border-radius: 12px;
+          color: #0D1B3E;
+          font-size: 14px;
+          font-weight: 500;
+          outline: none;
+          transition: all 0.15s;
+          font-family: inherit;
+          box-sizing: border-box;
+        }
+        .vc-input:focus {
+          border-color: #1E5FD4;
+          box-shadow: 0 0 0 3px rgba(30,95,212,0.12);
+          background: #fff;
+        }
+        .vc-btn {
+          width: 100%;
+          padding: 13px 20px;
+          margin-top: 4px;
+          background: linear-gradient(135deg, #1E5FD4 0%, #2EB8E6 100%);
+          border: none;
+          border-radius: 14px;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 6px 24px rgba(30,95,212,0.38);
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-family: inherit;
+        }
+        .vc-btn:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 10px 32px rgba(30,95,212,0.50);
+        }
+        .vc-btn:disabled {
+          background: rgba(30,95,212,0.5);
+          box-shadow: none;
+          cursor: not-allowed;
+        }
+        .vc-badges {
+          display: flex;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 1.5rem;
+          flex-wrap: wrap;
+        }
+        .vc-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 10px;
+          border-radius: 99px;
+          font-size: 11px;
+          font-weight: 600;
+          background: rgba(30,95,212,0.07);
+          color: #1E5FD4;
+          border: 1px solid rgba(30,95,212,0.15);
+          letter-spacing: 0.02em;
+        }
+        .vc-footer {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          margin-top: 1.5rem;
+          padding-top: 1.25rem;
+          border-top: 1px solid rgba(209,220,240,0.50);
+        }
+        .vc-footer img {
+          width: 320px;
+          height: auto;
+          object-fit: contain;
+          mix-blend-mode: multiply;
+        }
+        .vc-copyright {
+          font-size: 11px;
+          color: #8FA3BE;
+          font-weight: 500;
+          letter-spacing: 0.03em;
+        }
       `}</style>
 
-      <div id="login-bg">
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(13,27,62,0.15)', pointerEvents: 'none' }} />
+      <div id="vc-page">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(13,27,62,0.12)', pointerEvents: 'none' }} />
 
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '420px', margin: '0 16px' }}>
+        <div className="vc-card-wrap">
+          <div className="vc-gradient-bar" />
 
-          {/* Linha gradiente topo */}
-          <div style={{
-            height: '3px',
-            background: 'linear-gradient(90deg, transparent, #1E5FD4, #2EB8E6, #00C97A, transparent)',
-            borderRadius: '3px 3px 0 0',
-          }} />
+          <div className="vc-card">
 
-          {/* Card */}
-          <div style={{
-            background: 'white',
-            backdropFilter: 'none',
-            WebkitBackdropFilter: 'none',
-            border: '1px solid rgba(255,255,255,0.90)',
-            borderTop: 'none',
-            borderRadius: '0 0 24px 24px',
-            boxShadow: '0 32px 80px rgba(13,27,62,0.22)',
-            padding: '2rem',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-
-            {/* LOGO TOPO */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.75rem', background: 'transparent' }}>
+            {/* LOGO */}
+            <div className="vc-logo-wrap">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/vencio_logo_pack/Logo.menu1.png"
-                alt="Logo Vencio"
-                style={{ width: '220px', height: 'auto', objectFit: 'contain' }}
+                alt="Vencio"
+                className="vc-logo-img"
               />
-            </div>
-
-            {/* TÍTULO */}
-            <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-              <h1 style={{
-                fontSize: '22px', fontWeight: 800,
-                color: '#0D1B3E', letterSpacing: '-0.03em',
-                marginBottom: '6px', fontFamily: 'inherit',
-              }}>
-                Bem-vindo de volta
-              </h1>
-              <p style={{ fontSize: '14px', color: '#5A6B7D', fontWeight: 500, fontFamily: 'inherit' }}>
-                Acesse sua conta para continuar
-              </p>
             </div>
 
             {/* FORM */}
@@ -108,78 +209,41 @@ export default function LoginPage() {
                   padding: '10px 14px', borderRadius: '12px',
                   background: 'rgba(239,68,68,0.08)',
                   border: '1.5px solid rgba(239,68,68,0.25)',
-                  color: '#B91C1C', fontSize: '13px',
-                  fontWeight: 500, fontFamily: 'inherit',
+                  color: '#B91C1C', fontSize: '13px', fontWeight: 500,
                 }}>
                   ⚠ {error}
                 </div>
               )}
 
-              {/* Email */}
               <div>
-                <label style={{
-                  display: 'block', fontSize: '11px', fontWeight: 700,
-                  textTransform: 'uppercase', letterSpacing: '0.10em',
-                  color: '#5A6B7D', marginBottom: '7px', fontFamily: 'inherit',
-                }}>Email</label>
+                <label className="vc-label">Email</label>
                 <input
-                  type="email" value={email} required autoComplete="email"
+                  className="vc-input"
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  required
+                  autoComplete="email"
                   onChange={e => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  style={{
-                    width: '100%', padding: '12px 15px',
-                    background: 'rgba(240,244,248,0.70)',
-                    border: '1.5px solid rgba(209,220,240,0.80)',
-                    borderRadius: '12px', color: '#0D1B3E',
-                    fontSize: '14px', fontWeight: 500,
-                    outline: 'none', transition: 'all 0.15s',
-                    fontFamily: 'inherit', boxSizing: 'border-box',
-                  }}
-                  onFocus={e => {
-                    e.currentTarget.style.borderColor = '#1E5FD4';
-                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(30,95,212,0.12)';
-                    e.currentTarget.style.background = '#fff';
-                  }}
-                  onBlur={e => {
-                    e.currentTarget.style.borderColor = 'rgba(209,220,240,0.80)';
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.background = 'rgba(240,244,248,0.70)';
-                  }}
                 />
               </div>
 
-              {/* Senha */}
               <div>
-                <label style={{
-                  display: 'block', fontSize: '11px', fontWeight: 700,
-                  textTransform: 'uppercase', letterSpacing: '0.10em',
-                  color: '#5A6B7D', marginBottom: '7px', fontFamily: 'inherit',
-                }}>Senha</label>
+                <label className="vc-label">Senha</label>
                 <div style={{ position: 'relative' }}>
                   <input
+                    className="vc-input"
                     type={showPassword ? 'text' : 'password'}
-                    value={senha} required autoComplete="current-password"
+                    id="senha"
+                    name="senha"
+                    value={senha}
+                    required
+                    autoComplete="current-password"
                     onChange={e => setSenha(e.target.value)}
                     placeholder="••••••••"
-                    style={{
-                      width: '100%', padding: '12px 46px 12px 15px',
-                      background: 'rgba(240,244,248,0.70)',
-                      border: '1.5px solid rgba(209,220,240,0.80)',
-                      borderRadius: '12px', color: '#0D1B3E',
-                      fontSize: '14px', fontWeight: 500,
-                      outline: 'none', transition: 'all 0.15s',
-                      fontFamily: 'inherit', boxSizing: 'border-box',
-                    }}
-                    onFocus={e => {
-                      e.currentTarget.style.borderColor = '#1E5FD4';
-                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(30,95,212,0.12)';
-                      e.currentTarget.style.background = '#fff';
-                    }}
-                    onBlur={e => {
-                      e.currentTarget.style.borderColor = 'rgba(209,220,240,0.80)';
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.background = 'rgba(240,244,248,0.70)';
-                    }}
+                    style={{ paddingRight: '46px' }}
                   />
                   <button
                     type="button"
@@ -200,35 +264,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Botão Entrar */}
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%', padding: '13px 20px', marginTop: '4px',
-                  background: loading
-                    ? 'rgba(30,95,212,0.5)'
-                    : 'linear-gradient(135deg, #1E5FD4 0%, #2EB8E6 100%)',
-                  border: 'none', borderRadius: '14px',
-                  color: '#fff', fontSize: '15px', fontWeight: 700,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: loading ? 'none' : '0 6px 24px rgba(30,95,212,0.38)',
-                  transition: 'all 0.2s',
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', gap: '8px',
-                  fontFamily: 'inherit',
-                }}
-                onMouseEnter={e => {
-                  if (!loading) {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 10px 32px rgba(30,95,212,0.50)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  if (!loading) e.currentTarget.style.boxShadow = '0 6px 24px rgba(30,95,212,0.38)';
-                }}
-              >
+              <button type="submit" className="vc-btn" disabled={loading}>
                 {loading
                   ? <><Loader2 size={17} className="animate-spin" /> Entrando...</>
                   : <>Entrar <ArrowRight size={17} /></>
@@ -237,15 +273,18 @@ export default function LoginPage() {
 
             </form>
 
-            {/* LOGO RODAPÉ */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', marginTop: '1.75rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(209,220,240,0.50)', background: 'transparent' }}>
+            {/* BADGES */}
+            <div className="vc-badges">
+              <span className="vc-badge">🏢 Organização</span>
+              <span className="vc-badge">🔒 Confiança</span>
+              <span className="vc-badge">📋 Controle</span>
+            </div>
+
+            {/* RODAPÉ */}
+            <div className="vc-footer">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/vencio_logo_pack/Logo.menu2.png"
-                alt="Logo Vencio"
-                style={{ width: '320px', height: 'auto', objectFit: 'contain' }}
-              />
-              <p style={{ fontSize: '11px', color: '#8FA3BE', fontWeight: 500, letterSpacing: '0.03em', fontFamily: 'inherit' }}>
+              <img src="/vencio_logo_pack/Logo.menu2.png" alt="Vencio" />
+              <p className="vc-copyright">
                 © {new Date().getFullYear()} Vencio — Todos os direitos reservados
               </p>
             </div>
