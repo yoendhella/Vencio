@@ -23,21 +23,41 @@ export function VencioIcon({ variant = 'default', size = 32, className = '' }: V
 
   // ── 1. V GRADIENTE PRINCIPAL ──
   if (variant === 'default') return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" className={className}>
+    <svg width={size} height={size} viewBox="0 0 88 88" fill="none" className={className}>
       <defs>
-        <linearGradient id={`${id}-a`} x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#1E5FD4" />
-          <stop offset="50%"  stopColor="#2EB8E6" />
-          <stop offset="100%" stopColor="#00C97A" />
+        {/* Azul ciano — perna esquerda/frente */}
+        <linearGradient id={`${id}-lc`} x1="8" y1="6" x2="44" y2="82" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#14C8FF" />
+          <stop offset="55%"  stopColor="#009ED8" />
+          <stop offset="100%" stopColor="#0068B8" />
         </linearGradient>
-        <linearGradient id={`${id}-b`} x1="28" y1="44" x2="72" y2="72" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#2EB8E6" />
-          <stop offset="100%" stopColor="#00C97A" />
+        {/* Navy escuro — camada traseira (profundidade 3D) */}
+        <linearGradient id={`${id}-ld`} x1="25" y1="6" x2="65" y2="82" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#003888" />
+          <stop offset="100%" stopColor="#001A50" />
+        </linearGradient>
+        {/* Verde-teal — perna direita */}
+        <linearGradient id={`${id}-lg`} x1="44" y1="6" x2="80" y2="50" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#00CC9A" />
+          <stop offset="100%" stopColor="#009898" />
         </linearGradient>
       </defs>
-      <path d="M8 16 L40 82 L50 60 L27 16 Z"  fill={`url(#${id}-a)`} opacity="0.92" />
-      <path d="M92 16 L60 82 L50 60 L73 16 Z" fill={`url(#${id}-a)`} />
-      <path d="M29 52 L43 68 L71 37" stroke={`url(#${id}-b)`} strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* V traseiro navy — efeito de profundidade 3D */}
+      <path d="M20 8 L44 74 L68 8 L58 8 L44 56 L30 8 Z"
+        fill={`url(#${id}-ld)`} transform="translate(4,4)" opacity="0.85" />
+      {/* V principal — azul ciano */}
+      <path d="M8 8 L44 80 L80 8 L68 8 L44 60 L20 8 Z"
+        fill={`url(#${id}-lc)`} />
+      {/* Perna direita — verde-teal */}
+      <path d="M44 60 L68 8 L80 8 L44 80 Z"
+        fill={`url(#${id}-lg)`} opacity="0.92" />
+      {/* Checkmark branco espesso */}
+      <path d="M22 46 L38 63 L70 28"
+        fill="none" stroke="white" strokeWidth="8.5"
+        strokeLinecap="round" strokeLinejoin="round" />
+      {/* Highlight sutil */}
+      <ellipse cx="22" cy="18" rx="10" ry="6"
+        fill="white" opacity="0.15" transform="rotate(-20 22 18)" />
     </svg>
   );
 
