@@ -82,7 +82,7 @@ export default function LoginPage() {
               <img
                 src="/vencio_logo_pack/Logo.menu1.png"
                 alt="Logo Vencio"
-                style={{ width: '220px', height: 'auto', objectFit: 'contain', background: 'transparent', mixBlendMode: 'multiply' }}
+                style={{ width: '220px', height: 'auto', objectFit: 'contain', mixBlendMode: 'normal' as const, backgroundColor: 'white', padding: '8px', borderRadius: '8px' }}
               />
             </div>
 
@@ -243,7 +243,7 @@ export default function LoginPage() {
               <img
                 src="/vencio_logo_pack/Logo.menu2.png"
                 alt="Logo Vencio"
-                style={{ width: '280px', height: 'auto', objectFit: 'contain', background: 'transparent', mixBlendMode: 'multiply' }}
+                style={{ width: '280px', height: 'auto', objectFit: 'contain', mixBlendMode: 'normal' as const, backgroundColor: 'white', padding: '8px', borderRadius: '8px' }}
               />
               <p style={{ fontSize: '11px', color: '#8FA3BE', fontWeight: 500, letterSpacing: '0.03em', fontFamily: 'inherit' }}>
                 © {new Date().getFullYear()} Vencio — Todos os direitos reservados
