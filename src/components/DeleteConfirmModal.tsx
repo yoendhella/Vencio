@@ -1,79 +1,75 @@
 'use client';
-import { useState } from 'react';
-import { AlertTriangle, X, Trash2 } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 
 interface DeleteConfirmModalProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => Promise<void> | void;
-  title?: string;
-  description?: string;
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+  blocked?: boolean;
+  blockedMsg?: string;
   confirmLabel?: string;
 }
 
-export function DeleteConfirmModal({
-  open,
-  onClose,
+export default function DeleteConfirmModal({
+  isOpen,
+  title,
+  message,
   onConfirm,
-  title = 'Confirmar exclusão',
-  description = 'Esta ação não pode ser desfeita. Deseja continuar?',
-  confirmLabel = 'Excluir',
+  onCancel,
+  blocked,
+  blockedMsg,
+  confirmLabel = 'Sim, excluir',
 }: DeleteConfirmModalProps) {
-  const [loading, setLoading] = useState(false);
-
-  if (!open) return null;
-
-  async function handleConfirm() {
-    setLoading(true);
-    try {
-      await onConfirm();
-    } finally {
-      setLoading(false);
-      onClose();
-    }
-  }
-
+  if (!isOpen) return null;
+  const color = blocked ? '#ef4444' : '#f59e0b';
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      onClick={onCancel}
     >
-      <div style={{ background: 'var(--surface)', borderRadius: 16, border: '1px solid var(--border)', width: '100%', maxWidth: 440, padding: '28px 32px', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <AlertTriangle size={20} color="#DC2626" />
-            </div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{title}</h3>
+      <div
+        style={{ background: 'var(--surface)', borderRadius: 16, border: `2px solid ${color}`, width: '100%', maxWidth: 460, padding: '28px 32px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <AlertTriangle size={20} color={color} />
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', padding: 4 }}>
-            <X size={18} />
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{title}</h3>
+          <button onClick={onCancel} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+            <X size={16} />
           </button>
         </div>
 
-        <p style={{ fontSize: 13.5, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 24 }}>
-          {description}
-        </p>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>{message}</p>
 
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+        {blocked && blockedMsg && (
+          <div style={{ background: '#ef444422', border: '1px solid #ef444444', borderRadius: 8, padding: '10px 14px', marginBottom: 16 }}>
+            <p style={{ fontSize: 13, color: '#ef4444', fontWeight: 600 }}>⚠️ {blockedMsg}</p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid var(--border)' }}>
           <button
-            onClick={onClose}
+            onClick={onCancel}
             style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
           >
             Cancelar
           </button>
-          <button
-            onClick={handleConfirm}
-            disabled={loading}
-            style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: loading ? '#f87171' : '#DC2626', color: 'white', fontSize: 13, fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit', opacity: loading ? 0.7 : 1 }}
-          >
-            <Trash2 size={14} />
-            {loading ? 'Excluindo...' : confirmLabel}
-          </button>
+          {!blocked && (
+            <button
+              onClick={onConfirm}
+              style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: '#ef4444', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              {confirmLabel}
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default DeleteConfirmModal;
+export { DeleteConfirmModal };

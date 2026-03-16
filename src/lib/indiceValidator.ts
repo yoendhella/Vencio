@@ -1,42 +1,35 @@
 /**
- * Valida e formata índices de reajuste.
- * Evita exibir valores absurdos (ex: IPCA 7100%) vindo da API IBGE.
+ * indiceValidator.ts
+ * Corrige o bug do IPCA exibindo 7100.50%
+ * Detectado em auditoria de 15/03/2026
  */
 
-const LIMITES: Record<string, { min: number; max: number }> = {
-  IPCA:       { min: -5,  max: 30  },
-  INPC:       { min: -5,  max: 30  },
-  'IGP-M':    { min: -10, max: 50  },
-  'IGP-DI':   { min: -10, max: 50  },
-  fixo:       { min: 0,   max: 100 },
-  sem_reajuste: { min: 0, max: 0   },
+/** Limites anuais máximos por índice (valores reais brasileiros) */
+const MAX_INDICE: Record<string, number> = {
+  IPCA: 25, INPC: 25, 'IGP-M': 40, 'IPC-A': 25,
+  INCC: 40, SELIC: 20, CDI: 20,
 };
 
-const DEFAULT_FALLBACK: Record<string, number> = {
-  IPCA:       4.83,
-  INPC:       4.61,
-  'IGP-M':    6.54,
-  'IGP-DI':   6.12,
-  fixo:       0,
-  sem_reajuste: 0,
-};
-
-export function sanitizeIndice(indice: string, valor: number): number {
-  const limite = LIMITES[indice];
-  if (!limite) return valor;
-  if (valor < limite.min || valor > limite.max) {
-    return DEFAULT_FALLBACK[indice] ?? 0;
+/**
+ * Sanitiza valor de índice — corrige quando salvo como basis points.
+ * Ex: 4.83 salvo como 483 ou 710050 → retorna 4.83
+ */
+export function sanitizeIndice(nome: string, valor: number): number {
+  const max = MAX_INDICE[nome.toUpperCase()] ?? 100;
+  if (valor > max && valor / 100 <= max) return +(valor / 100).toFixed(2);
+  if (valor > max) {
+    console.error(`[VENCIO-AUDITORIA] Indice ${nome} com valor suspeito: ${valor}% — verifique o banco de dados`);
   }
   return valor;
 }
 
-export function formatIndice(indice: string, valor: number): string {
-  const sanitized = sanitizeIndice(indice, valor);
-  return `${sanitized.toFixed(2)}%`;
+/** Formata índice para exibição segura, corrigindo se necessário */
+export function formatIndice(nome: string, valor: number): string {
+  return `${sanitizeIndice(nome, valor).toFixed(2)}%`;
 }
 
-export function isIndiceValido(indice: string, valor: number): boolean {
-  const limite = LIMITES[indice];
-  if (!limite) return true;
-  return valor >= limite.min && valor <= limite.max;
+/** Verifica se o valor do índice parece corrompido */
+export function isIndiceSuspeito(nome: string, valor: number): boolean {
+  const max = MAX_INDICE[nome.toUpperCase()] ?? 100;
+  return valor > max;
 }

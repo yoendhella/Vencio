@@ -382,9 +382,9 @@ export default function ConfigPage() {
   const currentUserId = session?.user?.id;
 
   const [config, setConfig] = useState<Config>({
-    alerta90dias: false, alerta60dias: true, alerta30dias: true,
+    alerta90dias: true, alerta60dias: true, alerta30dias: true,
     alertaReajuste: true, alertaCertidao: true, alertaSla: true,
-    resumoSemanal: false, emailDestinatario: null,
+    resumoSemanal: true, emailDestinatario: null,
   });
   const [saving, setSaving] = useState(false);
   const [saved,  setSaved]  = useState(false);
